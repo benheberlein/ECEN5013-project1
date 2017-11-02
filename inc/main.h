@@ -24,4 +24,31 @@
 #ifndef __MAIN_H___
 #define __MAIN_H__
 
+#include <stdint.h>
+
+#define MAIN_SUCCESS		0
+#define MAIN_ERR_STUB 		126
+#define MAIN_ERR_UNKNOWN	127
+
+/**
+ * @brief Main task commands
+ */
+typedef enum main_cmd_e {
+    MAIN_EXIT,
+} main_cmd_t;
+
+/**
+ * @brief Main task function
+ *
+ * @return Returns program exit code 
+ */
+int main(void);
+
+/**
+ * @brief Kills all tasks and exits
+ *
+ * @return MAIN_SUCCESS or error code 
+ */
+uint8_t main_exit(void);
+
 #endif /* __MAIN_H__ */

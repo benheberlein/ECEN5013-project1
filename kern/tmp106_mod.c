@@ -9,15 +9,14 @@
 *
 *******************************************************************************/
 /**
- * @file template.c
- * @brief Brief description
+ * @file tmp106.c
+ * @brief Device driver for TMP106.c
  * 
- * In depth description.
+ * This is a kernel module that implements the I2C driver for the TMP106 module
+ * on the Beagle Bone Green Host.
  *
  * @author Ben Heberlein
  * @date Nov 2 2017
  * @version 1.0
  *
  */
-
-

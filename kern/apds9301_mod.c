@@ -9,10 +9,11 @@
 *
 *******************************************************************************/
 /**
- * @file template.c
- * @brief Brief description
+ * @file apds9301_mod.c
+ * @brief Device driver for APDS9301 module
  * 
- * In depth description.
+ * This is a kernel module that implements the I2C driver for the APDS9301
+ * module on the Beagle Bone Green host.
  *
  * @author Ben Heberlein
  * @date Nov 2 2017

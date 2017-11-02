@@ -23,4 +23,65 @@
  *
  */
 
+#include "temp.h"
+#include <stdint.h>
 
+void *temp_task(void *data) {
+
+    return NULL;
+}
+
+uint8_t temp_init(void) {
+    
+    return TEMP_ERR_STUB;
+}
+
+uint8_t temp_readreg(uint8_t address) {
+
+    return TEMP_ERR_STUB;
+}
+
+uint8_t temp_writereg(uint8_t address) {
+
+    return TEMP_ERR_STUB;
+}
+
+uint8_t temp_writeconfig(uint8_t data) {
+
+    return TEMP_ERR_STUB;
+}
+
+uint8_t temp_writeptr(uint8_t data) {
+
+    return TEMP_ERR_STUB;
+}
+
+uint8_t temp_gettemp(temp_fmt_t fmt) {
+
+    return TEMP_ERR_STUB;
+}
+
+uint8_t temp_gettemp(float res) {
+
+    return TEMP_ERR_STUB;
+}
+
+uint8_t temp_shutdown(void) {
+
+    return TEMP_ERR_STUB;
+}
+
+uint8_t temp_wakeup(void) {
+
+    return TEMP_ERR_STUB;
+}
+
+uint8_t temp_alive(void);
+
+    return TEMP_ERR_STUB;
+}
+
+uint8_t temp_kill(void);
+
+    return TEMP_ERR_STUB;
+}

@@ -21,4 +21,10 @@
  *
  */
 
+#include "msg.h"
+#include <stdint.h>
 
+uint8_t msg_init(void) {
+
+    return MSG_ERR_STUB;
+}

@@ -21,6 +21,14 @@
  *
  */
 
-int main() {
+#include "main.h"
+#include <stdint.h>
+
+uint8_t main_exit(void) {
+
+    return MAIN_ERR_STUB;
+}
+
+int main(void) {
     return 0;
 }

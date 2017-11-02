@@ -21,4 +21,36 @@
  *
  */
 
+#include "log.h"
+#include <stdint.h>
+
+void *log_task(void *data) {
+
+	return NULL;
+}
+
+uint8_t log_init(void) {
+	
+	return LOG_ERR_STUB;
+}
+
+uint8_t log_log(uint8_t *data) {
+
+	return LOG_ERR_STUB;
+}
+
+uint8_t log_setpath(uint8_t *data) {
+
+	return LOG_ERR_STUB;
+}
+
+uint8_t log_alive(void) {
+
+	return LOG_ERR_STUB;
+}
+
+uint8_t log_kill(void) {
+
+	return LOG_ERR_STUB;
+}
 

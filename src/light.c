@@ -24,4 +24,66 @@
  *
  */
 
+#include "light.h"
+#include <stdint.h>
+
+void *light_task(void *data) {
+
+	return NULL;
+}
+
+uint8_t light_init(void) {
+
+	return LIGHT_ERR_STUB;
+}
+
+uint8_t light_readreg(uint8_t address) {
+
+	return LIGHT_ERR_STUB;
+}
+
+uint8_t light_writereg(uint8_t address) {
+
+	return LIGHT_ERR_STUB;
+}
+
+uint8_t light_writeit(uint8_t time) {
+
+	return LIGHT_ERR_STUB;
+}
+
+uint8_t light_getlux(void) {
+
+	return LIGHT_ERR_STUB;
+}
+
+uint8_t light_enableint(void) {
+
+	return LIGHT_ERR_STUB;
+}
+
+uint8_t light_disableint(void) {
+
+	return LIGHT_ERR_STUB;
+}
+
+uint8_t light_readid(void);
+
+	return LIGHT_ERR_STUB;
+}
+
+uint8_t light_isday(void) {
+
+	return LIGHT_ERR_STUB;
+}
+
+uint8_t light_alive(void) {
+
+	return LIGHT_ERR_STUB;
+}
+
+uint8_t light_kill(void) {
+
+	return LIGHT_ERR_STUB;
+}
 

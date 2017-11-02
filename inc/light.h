@@ -71,7 +71,7 @@ uint8_t light_init(void);
  *
  * @return Returns LIGHT_SUCCESS or error code
  */
-uint8_t light_regreg(uint8_t address);
+uint8_t light_readreg(uint8_t address);
 
 /**
  * @brief Write register in light module

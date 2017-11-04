@@ -28,8 +28,6 @@
 #include <time.h>
 #include <string.h>
 
-static char *log_level_strings[] = {"DEBUG", "INFO", "WARN", "ERROR"};
-static char *log_task_strings[] = {"MAIN", "LIGHT", "TEMP", "LOG"};
 static FILE *log_file;
 
 void *log_task(void *data) {
@@ -50,6 +48,9 @@ void *log_task(void *data) {
         } else {
             /* Handle command data */
             switch(rx.cmd) {
+                case LOG_ALIVE:
+                    log_alive(&rx);
+                    break;
                 case LOG_INIT:
                     log_init(&rx);
                     break;
@@ -81,6 +82,10 @@ uint8_t log_init(logmsg_t *rx) {
 
 uint8_t log_log(logmsg_t *rx) {
 
+    if (log_file == NULL) {
+        return LOG_ERR_UNINIT;   
+    }
+
     /* Get time */
     time_t t;
     struct tm *ti;
@@ -111,7 +116,14 @@ uint8_t log_setpath(logmsg_t *rx) {
 
 uint8_t log_alive(logmsg_t *rx) {
 
-	return LOG_ERR_STUB;
+    /* Send alive */
+    msg_t tx;
+    tx.from = MSG_RSP_MASK | MAIN_THREAD_LOG;
+    tx.cmd = LOG_ALIVE;
+    tx.data[0] = 0xa5;
+    msg_send(&tx, rx->from);
+
+	return LOG_SUCCESS;
 }
 
 uint8_t log_kill(logmsg_t *rx) {

@@ -30,6 +30,7 @@
 
 #define LOG_SUCCESS     0
 #define LOG_ERR_FILE    1
+#define LOG_ERR_UNINIT  2
 #define LOG_ERR_STUB    126
 #define LOG_ERR_UNKNOWN 127
 
@@ -62,6 +63,12 @@
 #define LOG_LEVEL_INFO  1
 #define LOG_LEVEL_WARN  2
 #define LOG_LEVEL_ERROR 3
+
+/**
+ * @brief Log string arrays
+ */
+static char *log_level_strings[] = {"DEBUG", "INFO", "WARN", "ERROR"}; 
+static char *log_task_strings[] = {"MAIN", "LIGHT", "TEMP", "LOG"}; 
 
 /** 
  * @brief log task function

@@ -27,6 +27,7 @@
 #include "msg.h"
 #include <stdint.h>
 #include <stdio.h>
+#include <sys/signal.h>
 
 /**
  * @brief Error codes
@@ -67,6 +68,6 @@ int main(int argc, char **argv);
  *
  * @return MAIN_SUCCESS or error code 
  */
-uint8_t main_ex(msg_t *rx);
+uint8_t main_exit(msg_t *rx);
 
 #endif /* __MAIN_H__ */

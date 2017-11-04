@@ -54,6 +54,9 @@ void *temp_task(void *data) {
         } else {
             /* Handle command data */
             switch(rx.cmd) {
+                case TEMP_ALIVE:
+                    temp_alive(&rx);
+                    break;
                 case TEMP_INIT:
                     temp_init(&rx);
                     break;
@@ -140,7 +143,14 @@ uint8_t temp_wakeup(msg_t *rx) {
 
 uint8_t temp_alive(msg_t *rx) {
 
-    return TEMP_ERR_STUB;
+    /* Send alive */
+    msg_t tx;
+    tx.from = MSG_RSP_MASK | MAIN_THREAD_TEMP;
+    tx.cmd = TEMP_ALIVE;
+    tx.data[0] = 0xa5;
+    msg_send(&tx, rx->from);
+
+    return TEMP_SUCCESS;
 }
 
 uint8_t temp_kill(msg_t *rx) {

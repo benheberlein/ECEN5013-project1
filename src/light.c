@@ -50,6 +50,9 @@ void *light_task(void *data) {
         } else {
             /* Handle command data */
             switch(rx.cmd) {
+                case LIGHT_ALIVE:
+                    light_alive(&rx);
+                    break;
                 case LIGHT_INIT:
                     light_init(&rx);
                     break;
@@ -140,7 +143,14 @@ uint8_t light_isday(msg_t *rx) {
 
 uint8_t light_alive(msg_t *rx) {
 
-	return LIGHT_ERR_STUB;
+    /* Send alive */
+    msg_t tx;
+    tx.from = MSG_RSP_MASK | MAIN_THREAD_LIGHT;
+    tx.cmd = LIGHT_ALIVE;
+    tx.data[0] = 0xa5;
+    msg_send(&tx, rx->from);
+
+	return LIGHT_SUCCESS;
 }
 
 uint8_t light_kill(msg_t *rx) {

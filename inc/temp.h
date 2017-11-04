@@ -30,9 +30,25 @@
 #include <stdint.h>
 #include <stdio.h>
 
+/* Error codes */
 #define TEMP_SUCCESS        0
 #define TEMP_ERR_STUB       126
 #define TEMP_ERR_UNKNOWN    127
+
+/**
+ * @brief Temperature API
+ */
+#define TEMP_INIT           0
+#define TEMP_READREG        1
+#define TEMP_WRITEREG       2
+#define TEMP_WRITECONFIG    3
+//#defin MSG_CMD_TEMP_WRITEPTR
+#define TEMP_GETTEMP        4
+#define TEMP_SETRES         5
+#define TEMP_SHUTDOWN       6
+#define TEMP_WAKEUP         7
+#define TEMP_ALIVE          8
+#define TEMP_KILL           9
 
 /**
  * @brief I2C and sensor macros
@@ -58,30 +74,11 @@
 #define TEMP_REG_CTRL_EM    (1<<4)
 
 /**
- * @brief Temp task commands
- */
-typedef enum temp_cmd_e {
-    TEMP_INIT,
-    TEMP_READREG,
-    TEMP_WRITEREG,
-    TEMP_WRITECONFIG,
-    TEMP_WRITEPTR,
-    TEMP_GETTEMP,
-    TEMP_WRITERES,
-    TEMP_SHUTDOWN,
-    TEMP_WAKEUP,
-    TEMP_ALIVE,
-    TEMP_KILL
-} temp_cmd_t;
-
-/**
  * @brief Temperature formats
  */
-typedef enum temp_fmt_e {
-    TEMP_FMT_CELC,
-    TEMP_FMT_FAR,
-    TEMP_FMT_KEL,
-} temp_fmt_t;
+#define TEMP_FMT_CEL 0
+#define TEMP_FMT_FAR 1
+#define TEMP_FMT_KEL 2
 
 /** 
  * @brief temp task function
@@ -143,7 +140,7 @@ uint8_t temp_writeptr(msg_t *rx, uint8_t data);
  *
  * @return Return TEMP_SUCCESS or error code
  */
-uint8_t temp_gettemp(msg_t *rx, temp_fmt_t fmt);
+uint8_t temp_gettemp(msg_t *rx, uint8_t fmt);
 
 /**
  * @brief Configures the sensor resolution to the specified amount

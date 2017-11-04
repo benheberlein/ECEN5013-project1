@@ -31,26 +31,27 @@
 #include <stdint.h>
 #include <stdio.h>
 
+/**
+ * @brief Error codes 
+ */
 #define LIGHT_SUCCESS       0
 #define LIGHT_ERR_STUB      126
 #define LIGHT_ERR_UNKNOWN   127
 
 /**
- * @brief Light task commands
+ * @brief Light API
  */
-typedef enum light_cmd_e {
-    LIGHT_INIT,
-    LIGHT_READREG,
-    LIGHT_WRITEREG,
-    LIGHT_WRITEIT,
-    LIGHT_GETLUX,
-    LIGHT_ENABLEINT,
-    LIGHT_DISABLEINT,
-    LIGHT_READID,
-    LIGHT_ISDAY,
-    LIGHT_ALIVE,
-    LIGHT_KILL,
-} light_cmd_t;
+#define LIGHT_INIT          0
+#define LIGHT_READREG       1
+#define LIGHT_WRITEREG      2
+#define LIGHT_WRITEIT       3
+#define LIGHT_GETLUX        4
+#define LIGHT_ENABLEINT     5
+#define LIGHT_DISABLEINT    6
+#define LIGHT_READID        7
+#define LIGHT_ISDAY         8
+#define LIGHT_ALIVE         9
+#define LIGHT_KILL          10
 
 /** 
  * @brief light task function

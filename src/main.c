@@ -55,18 +55,32 @@ int main(void) {
 	/* Initialize temperature module */
 	msg_t tx;
 	tx.from = MAIN_THREAD_MAIN;
-	tx.cmd = MSG_CMD_TEMP_INIT;
+	tx.cmd = TEMP_INIT;
 	tx.data[0] = 0;
-    msg_send(&tx, MSG_QUEUE_TEMP);
+    msg_send(&tx, MAIN_THREAD_TEMP);
 
     /* Test read command */
 	tx.from = MAIN_THREAD_MAIN;
-	tx.cmd = MSG_CMD_TEMP_READREG;
+	tx.cmd = TEMP_READREG;
 	tx.data[0] = TEMP_REG_HIGH;
 	tx.data[1] = 0;
-    msg_send(&tx, MSG_QUEUE_TEMP);
+    msg_send(&tx, MAIN_THREAD_TEMP);
 
-    mqd_t rxq = mq_open(msg_names[MSG_QUEUE_MAIN], O_RDONLY);
+    tx.from = MAIN_THREAD_MAIN;
+	tx.cmd = TEMP_WRITEREG;
+	tx.data[0] = TEMP_REG_HIGH;
+	tx.data[1] = 0xa5;
+    tx.data[2] = 0xa5;
+    msg_send(&tx, MAIN_THREAD_TEMP);
+
+    tx.from = MAIN_THREAD_MAIN;
+	tx.cmd = TEMP_READREG;
+	tx.data[0] = TEMP_REG_HIGH;
+	tx.data[1] = 0;
+    msg_send(&tx, MAIN_THREAD_TEMP);
+
+
+    mqd_t rxq = mq_open(msg_names[MAIN_THREAD_MAIN], O_RDONLY);
 	msg_t rx;
     while(1) {
         
@@ -75,7 +89,7 @@ int main(void) {
             /* Handle response data */
 			uint16_t rx_fc = MAIN_RSP(rx.from, rx.cmd);
 			switch(rx_fc) {
-                case MAIN_RSP(MAIN_THREAD_TEMP, MSG_CMD_TEMP_READREG):
+                case MAIN_RSP(MAIN_THREAD_TEMP, TEMP_READREG):
                     printf("read value: %d\n", rx.data[0] | rx.data[1] << 8);
                 default:
 					break;

@@ -28,6 +28,11 @@
 #include <mqueue.h>
 
 /**
+ * @brief Macro for building respsonse case statements
+ */
+#define MSG_RSP(x, y) ((x) & MSG_FROM_MASK) >> 8 | ((y) & MSG_CMD_MASK)
+
+/**
  * @brief Message attributes
  */
 #define MSG_SIZE        16
@@ -68,33 +73,14 @@ typedef struct __attribute((packed)) logmsg_s {
 /**
  * @brief Queue descriptions
  */
-#define MSG_QUEUE_TOTAL 4 //MAIN_THREAD_TOTAL
+#define MSG_QUEUE_NUM 4
 #define MSG_QUEUE_PERM  0666
-#define MSG_QUEUE_MAIN  0 //MAIN_THREAD_MAIN
-#define MSG_QUEUE_LIGHT 1 //MAIN_THREAD_LIGHT
-#define MSG_QUEUE_TEMP  2 //MAIN_THREAD_TEMP
-#define MSG_QUEUE_LOG   3 //MAIN_THREAD_LOG
-mqd_t msg_queues[MSG_QUEUE_TOTAL];
-struct mq_attr msg_attrs[MSG_QUEUE_TOTAL];
+mqd_t msg_queues[MSG_QUEUE_NUM];
+struct mq_attr msg_attrs[MSG_QUEUE_NUM];
 static const char *msg_names[] = {"/mainqueue",
       		                        "/lightqueue",
             	    	            "/tempqueue",
                           		    "/logqueue"};
-
-/**
- * @brief Temperature messages
- */ 
-#define MSG_CMD_TEMP_INIT 0
-#define MSG_CMD_TEMP_READREG 1
-#define MSG_CMD_TEMP_WRITEREG 2
-#define MSG_CMD_TEMP_WRITECONFIG 3
-//#define MSG_CMD_TEMP_WRITEPTR
-#define MSG_CMD_TEMP_GETTEMP 4
-#define MSG_CMD_TEMP_SETRES 5
-#define MSG_CMD_TEMP_SHUTDOWN 6
-#define MSG_CMD_TEMP_WAKEUP 7
-#define MSG_CMD_TEMP_ALIVE 8
-#define MSG_CMD_TEMP_KILL 9
 
 /**
  * @brief Send a message to a queue

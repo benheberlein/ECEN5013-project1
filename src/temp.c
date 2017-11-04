@@ -39,7 +39,7 @@ static mraa_i2c_context i2c;
 void *temp_task(void *data) {
 
     /* Command loop */
-    mqd_t rxq = mq_open(msg_names[MSG_QUEUE_TEMP], O_RDONLY);
+    mqd_t rxq = mq_open(msg_names[MAIN_THREAD_TEMP], O_RDONLY);
     msg_t rx;
     while(1) {
         mq_receive(rxq, (char *) &rx, MSG_SIZE+1, NULL);
@@ -54,14 +54,14 @@ void *temp_task(void *data) {
         } else {
             /* Handle command data */
             switch(rx.cmd) {
-                case MSG_CMD_TEMP_INIT:
+                case TEMP_INIT:
                     temp_init(&rx);
                     break;
-                case MSG_CMD_TEMP_READREG:
+                case TEMP_READREG:
                     temp_readreg(&rx, rx.data[0]);
                     break;
-                case MSG_CMD_TEMP_WRITEREG:
-                    temp_writereg(&rx, rx.data[0], (uint16_t) rx.data[1]);
+                case TEMP_WRITEREG:
+                    temp_writereg(&rx, rx.data[0], rx.data[1] | rx.data[2] << 8);
                     break;
                 default:
                     break;
@@ -89,7 +89,7 @@ uint8_t temp_readreg(msg_t *rx, uint8_t address) {
     /* Send Response*/
     msg_t tx;
     tx.from = MSG_RSP_MASK | MAIN_THREAD_TEMP;
-    tx.cmd = MSG_CMD_TEMP_READREG;
+    tx.cmd = TEMP_READREG;
     tx.data[0] = data & 0xff;
     tx.data[1] = data >> 8;
     tx.data[2] = 0;
@@ -115,7 +115,7 @@ uint8_t temp_writeptr(msg_t *rx, uint8_t data) {
     return TEMP_ERR_STUB;
 }
 
-uint8_t temp_gettemp(msg_t *rx, temp_fmt_t fmt) {
+uint8_t temp_gettemp(msg_t *rx, uint8_t fmt) {
 
     return TEMP_ERR_STUB;
 }

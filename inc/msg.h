@@ -30,7 +30,7 @@
 /**
  * @brief Macro for building respsonse case statements
  */
-#define MSG_RSP(x, y) ((x) & MSG_FROM_MASK) >> 8 | ((y) & MSG_CMD_MASK)
+#define MSG_RSP(x, y) ((x) & MSG_FROM_MASK) << 8 | ((y) & MSG_CMD_MASK)
 
 /**
  * @brief Message attributes

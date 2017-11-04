@@ -95,7 +95,7 @@ uint8_t temp_readreg(msg_t *rx, uint8_t address) {
     tx.data[2] = 0;
     msg_send(&tx, rx->from);
 
-    return TEMP_ERR_STUB;
+    return TEMP_SUCCESS;
 }
 
 uint8_t temp_writereg(msg_t *rx, uint8_t address, uint16_t data) {

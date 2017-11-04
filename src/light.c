@@ -26,24 +26,78 @@
 
 #include "light.h"
 #include "msg.h"
+#include "main.h"
 #include <stdint.h>
+#include <mraa.h>
+
+static mraa_i2c_context i2c;
 
 void *light_task(void *data) {
+
+    /* Command loop */
+    mqd_t rxq = mq_open(msg_names[MAIN_THREAD_LIGHT], O_RDONLY);
+    msg_t rx;
+    while(1) {
+        mq_receive(rxq, (char *) &rx, MSG_SIZE+1, NULL);
+        if (rx.from & MSG_RSP_MASK) {
+            /* Handle response data */
+            uint16_t rx_fc = MSG_RSP(rx.from, rx.cmd);
+            switch(rx_fc) {
+                default:
+                    break;
+            }
+
+        } else {
+            /* Handle command data */
+            switch(rx.cmd) {
+                case LIGHT_INIT:
+                    light_init(&rx);
+                    break;
+                case LIGHT_READREG:
+                    light_readreg(&rx, rx.data[0]);
+                    break;
+                case LIGHT_WRITEREG:
+                    light_writereg(&rx, rx.data[0], rx.data[1]);
+                    break;
+                default:
+                    break;
+            }
+        }
+    }
 
 	return NULL;
 }
 
 uint8_t light_init(msg_t *rx) {
 
+    mraa_init();
+    i2c = mraa_i2c_init_raw(LIGHT_I2C_BUS);
+    mraa_i2c_address(i2c, LIGHT_I2C_ADDR);
+
 	return LIGHT_ERR_STUB;
 }
 
 uint8_t light_readreg(msg_t *rx, uint8_t address) {
+    uint8_t data;
+        
+    mraa_i2c_write_byte(i2c, LIGHT_CMD_READ | (address & LIGHT_CMD_ADDR_MASK));
+    data = mraa_i2c_read_byte(i2c);
+
+    /* Send Response*/
+    msg_t tx;
+    tx.from = MSG_RSP_MASK | MAIN_THREAD_LIGHT;
+    tx.cmd = LIGHT_READREG;
+    tx.data[0] = data & 0xff;
+    tx.data[1] = 0;
+    msg_send(&tx, rx->from);
 
 	return LIGHT_ERR_STUB;
 }
 
-uint8_t light_writereg(msg_t *rx, uint8_t address) {
+uint8_t light_writereg(msg_t *rx, uint8_t address, uint8_t data) {
+
+    mraa_i2c_write_byte(i2c, LIGHT_CMD_WRITE | (address & LIGHT_CMD_ADDR_MASK));
+    mraa_i2c_write_byte(i2c, data);
 
 	return LIGHT_ERR_STUB;
 }

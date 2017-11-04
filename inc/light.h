@@ -53,6 +53,28 @@
 #define LIGHT_ALIVE         9
 #define LIGHT_KILL          10
 
+/**
+ * @brief I2C and register macros
+ */
+#define LIGHT_I2C_BUS       2
+#define LIGHT_I2C_ADDR      0x39
+#define LIGHT_CMD_READ      0xA0
+#define LIGHT_CMD_WRITE     0x80
+#define LIGHT_CMD_ADDR_MASK 0x0f
+#define LIGHT_REG_CTRL      0
+#define LIGHT_REG_TIME      1
+#define LIGHT_REG_THRESHLL  2
+#define LIGHT_REG_THRESHLH  3
+#define LIGHT_REG_THRESHHL  4
+#define LIGHT_REG_THRESHHH  5
+#define LIGHT_REG_INT       6
+#define LIGHT_REG_CRC       8
+#define LIGHT_REG_ID        10
+#define LIGHT_REG_DATA0L    12
+#define LIGHT_REG_DATA0H    13
+#define LIGHT_REG_DATA1L    14
+#define LIGHT_REG_DATA1H    15
+
 /** 
  * @brief light task function
  *
@@ -82,10 +104,11 @@ uint8_t light_readreg(msg_t *rx, uint8_t address);
  * @brief Write register in light module
  *
  * @param address The register to write
+ * @param data The data to write
  *
  * @return Returns LIGHT_SUCCESS or error code
  */
-uint8_t light_writereg(msg_t *rx, uint8_t address);
+uint8_t light_writereg(msg_t *rx, uint8_t address, uint8_t data);
 
 /**
  * @brief Write integration time in light module

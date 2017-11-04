@@ -14,7 +14,7 @@ SRCS  = main.c \
         light.c \
 		temp.c \
 		log.c \
-		msg.c
+		msg.c \
 
 OBJS := $(SRCS:.c=.o)
 

@@ -34,6 +34,29 @@
 #define TEMP_ERR_UNKNOWN    127
 
 /**
+ * @brief I2C and sensor macros
+ */
+#define TEMP_I2C_BUS  2
+#define TEMP_I2C_ADDR 0x48
+#define TEMP_REG_TEMP 0x00
+#define TEMP_REG_CTRL 0x01
+#define TEMP_REG_HIGH 0x02
+#define TEMP_REG_LOW  0x03
+
+#define TEMP_REG_CTRL_OS    (1<<15)
+#define TEMP_REG_CTRL_R1    (1<<14)
+#define TEMP_REG_CTRL_R0    (1<<13)
+#define TEMP_REG_CTRL_F1    (1<<12)
+#define TEMP_REG_CTRL_F0    (1<<11)
+#define TEMP_REG_CTRL_POL   (1<<10)
+#define TEMP_REG_CTRL_TM    (1<<9)
+#define TEMP_REG_CTRL_SD    (1<<8)
+#define TEMP_REG_CTRL_CR1   (1<<7)
+#define TEMP_REG_CTRL_CR2   (1<<6)
+#define TEMP_REG_CTRL_AL    (1<<5)
+#define TEMP_REG_CTRL_EM    (1<<4)
+
+/**
  * @brief Temp task commands
  */
 typedef enum temp_cmd_e {
@@ -88,10 +111,11 @@ uint8_t temp_readreg(uint8_t address);
  * @brief Write a register in the temperature module
  * 
  * @param address Address of the register to write
+ * @param data Data to write
  *
  * @return Return TEMP_SUCCESS or error code
  */
-uint8_t temp_writereg(uint8_t address);
+uint8_t temp_writereg(uint8_t address, uint16_t data);
 
 /**
  * @brief Write the configuration register

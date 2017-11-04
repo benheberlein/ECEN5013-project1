@@ -19,7 +19,7 @@ SRCS  = main.c \
 OBJS := $(SRCS:.c=.o)
 
 CFLAGS = -std=c99 -g -O0 -Wall -Wextra -I$(INC_DIR) 
-LDFLAGS =
+LDFLAGS = -lrt -lmraa
 
 CC = gcc
 
@@ -30,7 +30,7 @@ all: build
 
 $(BIN_DIR)/$(OUTPUT_NAME): $(addprefix $(BUILD_DIR)/, $(OBJS))
 	@$(MKDIR_P) $(BIN_DIR)
-	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $^ -lmraa
+	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $^ $(LDFLAGS)
 
 $(BUILD_DIR)/%.o: %.c
 	@$(MKDIR_P) $(BUILD_DIR)

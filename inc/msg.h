@@ -27,11 +27,19 @@
 #include <stdint.h>
 #include <mqueue.h>
 
-#define MSG_SIZE 14
+/**
+ * @brief Message attributes
+ */
+#define MSG_SIZE    14
 #define MSG_LOGSIZE 253
+#define MSG_MAXMSGS 16
 
-#define MSG_SUCCESS 0
-#define MSG_ERR_STUB 126
+/**
+ * @brief Error codes
+ */
+#define MSG_SUCCESS     0
+#define MSG_ERR_INIT    1
+#define MSG_ERR_STUB    126
 #define MSG_ERR_UNKNOWN 127
 
 /**
@@ -53,16 +61,20 @@ typedef struct logmsg_s {
 } logmsg_t;
 
 /**
- * @brief Queue instances
+ * @brief Queue descriptions
  */
-mqd_t msg_main_queue;
-struct mq_attr msg_main_attr;
-mqd_t msg_light_queue;
-struct mq_attr msg_light_attr;
-mqd_t msg_temp_queue;
-struct mq_attr msg_temp_attr;
-mqd_t msg_log_queue;
-struct mq_attr msg_log_attr;
+#define MSG_QUEUE_TOTAL 4
+#define MSG_QUEUE_PERM  0660
+#define MSG_QUEUE_MAIN  0
+#define MSG_QUEUE_LIGHT 1
+#define MSG_QUEUE_TEMP  2
+#define MSG_QUEUE_LOG   3
+mqd_t msg_queues[MSG_QUEUE_TOTAL];
+struct mq_attr msg_attrs[MSG_QUEUE_TOTAL];
+char *msg_main_name[] = {"main",
+                         "light",
+                         "temp",
+                         "log"};
 
 /**
  * @brief Initialize queues

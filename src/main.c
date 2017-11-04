@@ -33,7 +33,7 @@ uint8_t main_exit(void) {
 }
 
 int main(void) {
-    temp_init();
+    msg_init();
 
     return 0;
 }

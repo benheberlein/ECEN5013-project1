@@ -67,7 +67,7 @@ uint8_t light_disableint(void) {
 	return LIGHT_ERR_STUB;
 }
 
-uint8_t light_readid(void);
+uint8_t light_readid(void) {
 
 	return LIGHT_ERR_STUB;
 }

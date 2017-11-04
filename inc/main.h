@@ -42,7 +42,7 @@ typedef enum main_cmd_e {
  *
  * @return Returns program exit code 
  */
-int main(void);
+//int main(void);
 
 /**
  * @brief Kills all tasks and exits

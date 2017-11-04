@@ -22,6 +22,9 @@
  */
 
 #include "main.h"
+#include "light.h"
+#include "temp.h"
+#include "log.h"
 #include <stdint.h>
 
 uint8_t main_exit(void) {
@@ -30,5 +33,7 @@ uint8_t main_exit(void) {
 }
 
 int main(void) {
+    temp_init();
+
     return 0;
 }

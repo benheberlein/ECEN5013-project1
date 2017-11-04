@@ -26,6 +26,9 @@
 #ifndef __TEMP_H__
 #define __TEMP_H__
 
+#include <stdint.h>
+#include <stdio.h>
+
 #define TEMP_SUCCESS        0
 #define TEMP_ERR_STUB       126
 #define TEMP_ERR_UNKNOWN    127
@@ -124,7 +127,7 @@ uint8_t temp_gettemp(temp_fmt_t fmt);
  *
  * @return Return TEMP_SUCCESS or error code
  */
-uint8_t temp_gettemp(float res);
+uint8_t temp_setres(float res);
 
 /**
  * @brief Puts the temperature module to sleep

@@ -24,6 +24,9 @@
 #ifndef __LOG_H__
 #define __LOG_H__
 
+#include <stdint.h>
+#include <stdio.h>
+
 #define LOG_SUCCESS     0
 #define LOG_ERR_STUB    126
 #define LOG_ERR_UNKNOWN 127

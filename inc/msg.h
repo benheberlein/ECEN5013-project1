@@ -31,6 +31,7 @@
 #define MSG_LOGSIZE 253
 
 #define MSG_SUCCESS 0
+#define MSG_ERR_STUB 126
 #define MSG_ERR_UNKNOWN 127
 
 /**
@@ -45,11 +46,11 @@ typedef struct msg_s {
 /**
  * @brief Message structure for log thread
  */
-typedef struct msg_s {
+typedef struct logmsg_s {
     uint8_t from;               /* First bit is RSP field */
     uint8_t cmd;                /* Command */ 
     uint8_t data[MSG_LOGSIZE];   /* NULL terminated data */
-} msg_t;
+} logmsg_t;
 
 /**
  * @brief Queue instances

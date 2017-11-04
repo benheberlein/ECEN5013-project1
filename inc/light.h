@@ -27,6 +27,9 @@
 #ifndef __LIGHT_H__
 #define __LIGHT_H__
 
+#include <stdint.h>
+#include <stdio.h>
+
 #define LIGHT_SUCCESS       0
 #define LIGHT_ERR_STUB      126
 #define LIGHT_ERR_UNKNOWN   127

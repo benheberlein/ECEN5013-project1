@@ -24,7 +24,9 @@
  */
 
 #include "temp.h"
+#include "mraa.h"
 #include <stdint.h>
+#include <byteswap.h>
 
 void *temp_task(void *data) {
 
@@ -32,7 +34,18 @@ void *temp_task(void *data) {
 }
 
 uint8_t temp_init(void) {
-    
+
+    mraa_init();
+    mraa_i2c_context i2c;
+    i2c = mraa_i2c_init_raw(2);
+    mraa_i2c_address(i2c, 0x48);
+
+    uint16_t data = 0;
+    while(1) {
+        mraa_i2c_write_word_data(i2c, 0xa5a5, 0x03);
+        data = __bswap_16((mraa_i2c_read_word_data(i2c, 0x03)));
+    }
+
     return TEMP_ERR_STUB;
 }
 
@@ -61,7 +74,7 @@ uint8_t temp_gettemp(temp_fmt_t fmt) {
     return TEMP_ERR_STUB;
 }
 
-uint8_t temp_gettemp(float res) {
+uint8_t temp_setres(float res) {
 
     return TEMP_ERR_STUB;
 }
@@ -76,12 +89,12 @@ uint8_t temp_wakeup(void) {
     return TEMP_ERR_STUB;
 }
 
-uint8_t temp_alive(void);
+uint8_t temp_alive(void) {
 
     return TEMP_ERR_STUB;
 }
 
-uint8_t temp_kill(void);
+uint8_t temp_kill(void) {
 
     return TEMP_ERR_STUB;
 }

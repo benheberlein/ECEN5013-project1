@@ -26,6 +26,7 @@
 #ifndef __TEMP_H__
 #define __TEMP_H__
 
+#include "msg.h"
 #include <stdint.h>
 #include <stdio.h>
 
@@ -96,7 +97,7 @@ void *temp_task(void *data);
  * 
  * @return Return TEMP_SUCCESS or error code
  */
-uint8_t temp_init(void);
+uint8_t temp_init(msg_t *rx);
 
 /**
  * @brief Read a register in the temperature module
@@ -105,7 +106,7 @@ uint8_t temp_init(void);
  *
  * @return Return TEMP_SUCCESS or error code
  */
-uint8_t temp_readreg(uint8_t address);
+uint8_t temp_readreg(msg_t *rx, uint8_t address);
 
 /**
  * @brief Write a register in the temperature module
@@ -115,7 +116,7 @@ uint8_t temp_readreg(uint8_t address);
  *
  * @return Return TEMP_SUCCESS or error code
  */
-uint8_t temp_writereg(uint8_t address, uint16_t data);
+uint8_t temp_writereg(msg_t *rx, uint8_t address, uint16_t data);
 
 /**
  * @brief Write the configuration register
@@ -124,7 +125,7 @@ uint8_t temp_writereg(uint8_t address, uint16_t data);
  *
  * @return Return TEMP_SUCCESS or error code
  */
-uint8_t temp_writeconfig(uint8_t data);
+uint8_t temp_writeconfig(msg_t *rx, uint8_t data);
 
 /**
  * @brief Write the pointer register
@@ -133,7 +134,7 @@ uint8_t temp_writeconfig(uint8_t data);
  *
  * @return Return TEMP_SUCCESS or error code
  */
-uint8_t temp_writeptr(uint8_t data);
+uint8_t temp_writeptr(msg_t *rx, uint8_t data);
 
 /**
  * @brief Get the temperature 
@@ -142,7 +143,7 @@ uint8_t temp_writeptr(uint8_t data);
  *
  * @return Return TEMP_SUCCESS or error code
  */
-uint8_t temp_gettemp(temp_fmt_t fmt);
+uint8_t temp_gettemp(msg_t *rx, temp_fmt_t fmt);
 
 /**
  * @brief Configures the sensor resolution to the specified amount
@@ -151,34 +152,34 @@ uint8_t temp_gettemp(temp_fmt_t fmt);
  *
  * @return Return TEMP_SUCCESS or error code
  */
-uint8_t temp_setres(float res);
+uint8_t temp_setres(msg_t *rx, float res);
 
 /**
  * @brief Puts the temperature module to sleep
  *
  * @return Return TEMP_SUCCESS or error code
  */
-uint8_t temp_shutdown(void);
+uint8_t temp_shutdown(msg_t *rx);
 
 /**
  * @brief Wakes the temperature module back up from sleep
  *
  * @return Return TEMP_SUCCESS or error code
  */
-uint8_t temp_wakeup(void);
+uint8_t temp_wakeup(msg_t *rx);
 
 /**
  * @brief Checks if the temperature task is still alive 
  *
  * @return Return TEMP_SUCCESS or error code
  */
-uint8_t temp_alive(void);
+uint8_t temp_alive(msg_t *rx);
 
 /**
  * @brief Kills the task gracefully
  *
  * @return Return TEMP_SUCCESS or error code
  */
-uint8_t temp_kill(void);
+uint8_t temp_kill(msg_t *rx);
 
 #endif /* __TEMP_H__ */

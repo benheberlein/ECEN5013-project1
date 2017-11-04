@@ -23,8 +23,16 @@
 
 #include "msg.h"
 #include <stdint.h>
+#include <stdio.h>
 #include <fcntl.h>
 #include <mqueue.h>
+
+uint8_t msg_send(msg_t *tx, uint8_t to) {
+
+    mq_send(msg_queues[to], (char *) tx, MSG_SIZE, 0); 
+
+    return MSG_SUCCESS;
+}
 
 uint8_t msg_init(void) {
 
@@ -38,10 +46,13 @@ uint8_t msg_init(void) {
     msg_attrs[MSG_QUEUE_LOG].mq_msgsize = MSG_LOGSIZE;
 
     /* Open queues */
-    for (int i = 0; i < MSG_QUEUE_TOTAL; i++) {
-        if ((msg_queues[i] = mq_open(msg_main_name[i], O_RDWR | O_CREAT, MSG_QUEUE_PERM, &msg_attrs[i])) == -1) {
-            return MSG_ERR_INIT;   
-        }
+    for (int i = 0; i < MSG_QUEUE_TOTAL; i++) {       
+            msg_queues[i] = mq_open(msg_names[i], O_WRONLY | O_CREAT, MSG_QUEUE_PERM, &msg_attrs[i]);
+            if (msg_queues[i] == -1) {
+                perror("msg init");
+                return MSG_ERR_INIT;   
+            }
+       
     }
 
     return MSG_SUCCESS;

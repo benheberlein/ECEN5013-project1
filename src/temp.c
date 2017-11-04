@@ -24,9 +24,11 @@
  */
 
 #include "temp.h"
+#include "msg.h"
 #include "mraa.h"
 #include <stdint.h>
 #include <byteswap.h>
+#include <mqueue.h>
 
 /**
  * @brief Private variables
@@ -35,10 +37,41 @@ static mraa_i2c_context i2c;
 
 void *temp_task(void *data) {
 
+    /* Command loop */
+    mqd_t rxq = mq_open(msg_names[MSG_QUEUE_TEMP], O_RDONLY);
+    msg_t rx;
+    while(1) {
+        mq_receive(rxq, (char *) &rx, MSG_SIZE+1, NULL);
+        if (rx.from & MSG_RSP_MASK) {
+            /* Handle response data */
+            uint16_t rx_fc = (rx.from & MSG_FROM_MASK) << 8 | (rx.cmd &MSG_CMD_MASK);
+            switch(rx_fc) {
+                default:
+                    break;
+            }
+
+        } else {
+            /* Handle command data */
+            switch(rx.cmd) {
+                case MSG_CMD_TEMP_INIT:
+                    temp_init(&rx);
+                    break;
+                case MSG_CMD_TEMP_READREG:
+                    temp_readreg(&rx, rx.data[0]);
+                    break;
+                case MSG_CMD_TEMP_WRITEREG:
+                    temp_writereg(&rx, rx.data[0], (uint16_t) rx.data[1]);
+                    break;
+                default:
+                    break;
+            }
+        }
+    }
+
     return NULL;
 }
 
-uint8_t temp_init(void) {
+uint8_t temp_init(msg_t *rx) {
 
     mraa_init();
     i2c = mraa_i2c_init_raw(TEMP_I2C_BUS);
@@ -47,59 +80,66 @@ uint8_t temp_init(void) {
     return TEMP_SUCCESS;
 }
 
-uint8_t temp_readreg(uint8_t address) {
+uint8_t temp_readreg(msg_t *rx, uint8_t address) {
 
-    uint16_t data = 0;
+    uint16_t data;
     data = __bswap_16((mraa_i2c_read_word_data(i2c, address)));
 
-    /* TODO: Send response msg */
+    /* Send Response*/
+    msg_t tx;
+    tx.from = MSG_RSP_MASK | MAIN_THREAD_TEMP;
+    tx.cmd = MSG_CMD_TEMP_READREG;
+    tx.data[0] = data & 0xff;
+    tx.data[1] = data >> 8;
+    tx.data[2] = 0;
+    msg_send(&tx, rx->from);
 
     return TEMP_ERR_STUB;
 }
 
-uint8_t temp_writereg(uint8_t address, uint16_t data) {
+uint8_t temp_writereg(msg_t *rx, uint8_t address, uint16_t data) {
 
     mraa_i2c_write_word_data(i2c, __bswap_16(data), address);
 
     return TEMP_SUCCESS;
 }
 
-uint8_t temp_writeconfig(uint8_t data) {
+uint8_t temp_writeconfig(msg_t *rx, uint8_t data) {
 
     return TEMP_ERR_STUB;
 }
 
-uint8_t temp_writeptr(uint8_t data) {
+uint8_t temp_writeptr(msg_t *rx, uint8_t data) {
 
     return TEMP_ERR_STUB;
 }
 
-uint8_t temp_gettemp(temp_fmt_t fmt) {
+uint8_t temp_gettemp(msg_t *rx, temp_fmt_t fmt) {
 
     return TEMP_ERR_STUB;
 }
 
-uint8_t temp_setres(float res) {
+uint8_t temp_setres(msg_t *rx, float res) {
 
     return TEMP_ERR_STUB;
 }
 
-uint8_t temp_shutdown(void) {
+uint8_t temp_shutdown(msg_t *rx) {
 
     return TEMP_ERR_STUB;
 }
 
-uint8_t temp_wakeup(void) {
+uint8_t temp_wakeup(msg_t *rx) {
 
     return TEMP_ERR_STUB;
 }
 
-uint8_t temp_alive(void) {
+uint8_t temp_alive(msg_t *rx) {
 
     return TEMP_ERR_STUB;
 }
 
-uint8_t temp_kill(void) {
+uint8_t temp_kill(msg_t *rx) {
 
     return TEMP_ERR_STUB;
 }

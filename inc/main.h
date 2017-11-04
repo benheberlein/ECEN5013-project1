@@ -26,16 +26,30 @@
 
 #include <stdint.h>
 
+/**
+ * @brief Error codes
+ */
 #define MAIN_SUCCESS		0
+#define MAIN_ERR_INIT       1
 #define MAIN_ERR_STUB 		126
 #define MAIN_ERR_UNKNOWN	127
 
 /**
+ * @brief Thread IDs
+ */
+#define MAIN_THREAD_TOTAL 4
+#define MAIN_THREAD_MAIN  0
+#define MAIN_THREAD_LIGHT 1
+#define MAIN_THREAD_TEMP  2
+#define MAIN_THREAD_LOG   3
+
+/**
  * @brief Main task commands
  */
-typedef enum main_cmd_e {
+/*typedef enum main_cmd_e {
     MAIN_EXIT,
 } main_cmd_t;
+*/
 
 /**
  * @brief Main task function

@@ -28,6 +28,13 @@
 #include <fcntl.h>
 #include <mqueue.h>
 
+uint8_t logmsg_send(logmsg_t *tx, uint8_t to) {
+    
+    mq_send(msg_queues[to], (char *) tx, MSG_LOGSIZE, 0);
+    
+    return MSG_SUCCESS;
+}
+
 uint8_t msg_send(msg_t *tx, uint8_t to) {
 
     mq_send(msg_queues[to], (char *) tx, MSG_SIZE, 0); 

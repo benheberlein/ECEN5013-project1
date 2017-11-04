@@ -29,19 +29,25 @@
 #include <stdint.h>
 #include <pthread.h>
 #include <mraa.h>
+#include <string.h>
+
+static const char *MAIN_USAGE = "One optional argument for log file name.\n";
 
 static pthread_t main_tasks[MAIN_THREAD_TOTAL];
 
 static uint8_t __main_pthread_init(void) {
 
-    // TODO for all tasks...
+    /* Open all threads */
     if (pthread_create(&main_tasks[MAIN_THREAD_TEMP], NULL, temp_task, NULL)) {
        return MAIN_ERR_INIT; 
     }
     if (pthread_create(&main_tasks[MAIN_THREAD_LIGHT], NULL, light_task, NULL)) {
        return MAIN_ERR_INIT; 
     }
-    
+    if (pthread_create(&main_tasks[MAIN_THREAD_LOG], NULL, log_task, NULL)) {
+       return MAIN_ERR_INIT; 
+    }
+
     return MAIN_ERR_STUB;
 }
 
@@ -50,10 +56,32 @@ uint8_t main_ex(msg_t *rx) {
     return MAIN_ERR_STUB;
 }
 
-int main(void) {
+int main(int argc, char **argv) {
+    
+    if (argc > 3) {
+        printf("%s", MAIN_USAGE);
+    }            
+   
     msg_init();
     __main_pthread_init();
+
+    /* Initialize logger */
+    char *log_file;
+    if (argc == 2) {
+        log_file = argv[1];
+    } else {
+        log_file = "project1.log";
+    }
     
+    logmsg_t ltx;
+    ltx.from = MAIN_THREAD_MAIN;
+    ltx.cmd = LOG_INIT;
+    strcpy((char *) ltx.data, log_file);
+    logmsg_send(&ltx, MAIN_THREAD_LOG);
+
+    LOG_FMT(MAIN_THREAD_MAIN, LOG_LEVEL_DEBUG, ltx, "Initialized logger.");
+    logmsg_send(&ltx, MAIN_THREAD_LOG);
+
 	/* Initialize temperature module */
 	msg_t tx;
 	tx.from = MAIN_THREAD_MAIN;

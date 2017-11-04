@@ -87,6 +87,11 @@ void *light_task(void *data);
 /**
  * @brief Initializes the light task
  *
+ * DATA     none
+ * RESPONSE none
+ * 
+ * @param rx Pointer to message
+ *
  * @return Returns LIGHT_SUCCESS or error code
  */
 uint8_t light_init(msg_t *rx);
@@ -94,33 +99,47 @@ uint8_t light_init(msg_t *rx);
 /**
  * @brief Read register in light module
  *
- * @param address The register to read
+ * DATA     (1) address to read
+ * RESPONSE (1) read data
+ * 
+ * @param rx Pointer to message
  *
  * @return Returns LIGHT_SUCCESS or error code
  */
-uint8_t light_readreg(msg_t *rx, uint8_t address);
+uint8_t light_readreg(msg_t *rx);
 
 /**
  * @brief Write register in light module
  *
- * @param address The register to write
- * @param data The data to write
+ * DATA     (1) address to write
+			(1) data to write
+ * RESPONSE none
+ * 
+ * @param rx Pointer to message
  *
  * @return Returns LIGHT_SUCCESS or error code
  */
-uint8_t light_writereg(msg_t *rx, uint8_t address, uint8_t data);
+uint8_t light_writereg(msg_t *rx);
 
 /**
  * @brief Write integration time in light module
  *
- * @param time New integration time
+ * DATA     (1) integration time
+ * RESPONSE none
+ * 
+ * @param rx Pointer to message
  *
  * @return Returns LIGHT_SUCCESS or error code
  */
-uint8_t light_writeit(msg_t *rx, uint8_t time);
+uint8_t light_writeit(msg_t *rx);
 
 /**
  * @brief Get the luminosity from the light module
+ *
+ * DATA     none
+ * RESPONSE (4) lux data in float
+ * 
+ * @param rx Pointer to message
  *
  * @return Returns LIGHT_SUCCESS or error code
  */
@@ -129,12 +148,22 @@ uint8_t light_getlux(msg_t *rx);
 /**
  * @brief Enable interrupts in the light module
  *
+ * DATA     none
+ * RESPONSE none
+ * 
+ * @param rx Pointer to message
+ *
  * @return Returns LIGHT_SUCCESS or error code
  */
 uint8_t light_enableint(msg_t *rx);
 
 /**
  * @brief Disable interrupts in the light module
+ *
+ * DATA     none
+ * RESPONSE none
+ * 
+ * @param rx Pointer to message
  *
  * @return Returns LIGHT_SUCCESS or error code
  */
@@ -143,12 +172,22 @@ uint8_t light_disableint(msg_t *rx);
 /**
  * @brief Read identification register
  *
+ * DATA     none
+ * RESPONSE (1) contents of ID register
+ * 
+ * @param rx Pointer to message
+ *
  * @return Returns LIGHT_SUCCESS or error code
  */
 uint8_t light_readid(msg_t *rx);
 
 /**
  * @brief Check if night or day
+ *
+ * DATA     none
+ * RESPONSE (1) if day response is 1 else 0
+ * 
+ * @param rx Pointer to message
  *
  * @return Returns LIGHT_SUCCESS or error code
  */
@@ -157,12 +196,22 @@ uint8_t light_isday(msg_t *rx);
 /**
  * @brief Check if the light task is still alive
  *
+ * DATA     none
+ * RESPONSE (1) alive signal 0xa5
+ * 
+ * @param rx Pointer to message
+ *
  * @return Returns LIGHT_SUCCESS or error code
  */
 uint8_t light_alive(msg_t *rx);
 
 /**
  * @brief Kill the light task gracefully
+ *
+ * DATA     none
+ * RESPONSE none
+ * 
+ * @param rx Pointer to message
  *
  * @return Returns LIGHT_SUCCESS or error code
  */

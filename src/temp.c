@@ -45,7 +45,7 @@ void *temp_task(void *data) {
         mq_receive(rxq, (char *) &rx, MSG_SIZE+1, NULL);
         if (rx.from & MSG_RSP_MASK) {
             /* Handle response data */
-            uint16_t rx_fc = (rx.from & MSG_FROM_MASK) << 8 | (rx.cmd &MSG_CMD_MASK);
+            uint16_t rx_fc = MSG_RSP(rx.from, rx.cmd);
             switch(rx_fc) {
                 default:
                     break;
@@ -58,10 +58,10 @@ void *temp_task(void *data) {
                     temp_init(&rx);
                     break;
                 case TEMP_READREG:
-                    temp_readreg(&rx, rx.data[0]);
+                    temp_readreg(&rx);
                     break;
                 case TEMP_WRITEREG:
-                    temp_writereg(&rx, rx.data[0], rx.data[1] | rx.data[2] << 8);
+                    temp_writereg(&rx);
                     break;
                 default:
                     break;
@@ -81,9 +81,10 @@ uint8_t temp_init(msg_t *rx) {
     return TEMP_SUCCESS;
 }
 
-uint8_t temp_readreg(msg_t *rx, uint8_t address) {
+uint8_t temp_readreg(msg_t *rx) {
 
     uint16_t data;
+    uint8_t address = rx->data[0];
     data = __bswap_16((mraa_i2c_read_word_data(i2c, address)));
 
     /* Send Response*/
@@ -98,30 +99,32 @@ uint8_t temp_readreg(msg_t *rx, uint8_t address) {
     return TEMP_SUCCESS;
 }
 
-uint8_t temp_writereg(msg_t *rx, uint8_t address, uint16_t data) {
+uint8_t temp_writereg(msg_t *rx) {
+
+    uint8_t address = rx->data[0];
+    uint16_t data = rx->data[1] | rx->data[2] << 8;
 
     mraa_i2c_write_word_data(i2c, __bswap_16(data), address);
 
     return TEMP_SUCCESS;
 }
 
-uint8_t temp_writeconfig(msg_t *rx, uint8_t data) {
+uint8_t temp_writeconfig(msg_t *rx) {
 
     return TEMP_ERR_STUB;
 }
 
-uint8_t temp_writeptr(msg_t *rx, uint8_t data) {
+uint8_t temp_writeptr(msg_t *rx) {
 
     return TEMP_ERR_STUB;
 }
 
-uint8_t temp_gettemp(msg_t *rx, uint8_t fmt) {
+uint8_t temp_gettemp(msg_t *rx) {
 
     return TEMP_ERR_STUB;
 }
 
-uint8_t temp_setres(msg_t *rx, float res) {
-
+uint8_t temp_setres(msg_t *rx) {
     return TEMP_ERR_STUB;
 }
 

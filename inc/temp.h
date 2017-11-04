@@ -91,7 +91,12 @@ void *temp_task(void *data);
 
 /**
  * @brief Initialize temperature task
+ *
+ * DATA     none
+ * RESPONSE none
  * 
+ * @param rx Pointer to message
+ *
  * @return Return TEMP_SUCCESS or error code
  */
 uint8_t temp_init(msg_t *rx);
@@ -99,61 +104,83 @@ uint8_t temp_init(msg_t *rx);
 /**
  * @brief Read a register in the temperature module
  * 
- * @param address Address of the register to read
+ * DATA     (1) address to read
+ * RESPONSE (1) read data
+ * 
+ * @param rx Pointer to message
  *
  * @return Return TEMP_SUCCESS or error code
  */
-uint8_t temp_readreg(msg_t *rx, uint8_t address);
+uint8_t temp_readreg(msg_t *rx);
 
 /**
  * @brief Write a register in the temperature module
  * 
- * @param address Address of the register to write
- * @param data Data to write
+ * DATA     (1) address to write
+ *          (1) write data
+ * RESPONSE none
+ * 
+ * @param rx Pointer to message
  *
  * @return Return TEMP_SUCCESS or error code
  */
-uint8_t temp_writereg(msg_t *rx, uint8_t address, uint16_t data);
+uint8_t temp_writereg(msg_t *rx);
 
 /**
  * @brief Write the configuration register
  * 
- * @param data The data to write
+ * DATA     (2) data to write
+ * RESPONSE none
+ * 
+ * @param rx Pointer to message
  *
  * @return Return TEMP_SUCCESS or error code
  */
-uint8_t temp_writeconfig(msg_t *rx, uint8_t data);
+uint8_t temp_writeconfig(msg_t *rx);
 
 /**
  * @brief Write the pointer register
  * 
- * @param data The data to write
+ * DATA     (1) data to write     
+ * RESPONSE none
+ * 
+ * @param rx Pointer to message
  *
  * @return Return TEMP_SUCCESS or error code
  */
-uint8_t temp_writeptr(msg_t *rx, uint8_t data);
+uint8_t temp_writeptr(msg_t *rx);
 
 /**
  * @brief Get the temperature 
  * 
- * @param fmt The format of type temp_fmt_t
+ * DATA     (1) format type
+ * RESPONSE (4) data as float
+ * 
+ * @param rx Pointer to message
  *
  * @return Return TEMP_SUCCESS or error code
  */
-uint8_t temp_gettemp(msg_t *rx, uint8_t fmt);
+uint8_t temp_gettemp(msg_t *rx);
 
 /**
  * @brief Configures the sensor resolution to the specified amount
  * 
- * @param res The resolution of the sensor
+ * DATA     (4) resolution as fload
+ * RESPONSE none
+ * 
+ * @param rx Pointer to message
  *
  * @return Return TEMP_SUCCESS or error code
  */
-uint8_t temp_setres(msg_t *rx, float res);
+uint8_t temp_setres(msg_t *rx);
 
 /**
  * @brief Puts the temperature module to sleep
  *
+ * DATA     none    
+ * RESPONSE none
+ * 
+ * @param rx Pointer to message
  * @return Return TEMP_SUCCESS or error code
  */
 uint8_t temp_shutdown(msg_t *rx);
@@ -161,6 +188,10 @@ uint8_t temp_shutdown(msg_t *rx);
 /**
  * @brief Wakes the temperature module back up from sleep
  *
+ * DATA     none
+ * RESPONSE none
+ * 
+ * @param rx Pointer to message
  * @return Return TEMP_SUCCESS or error code
  */
 uint8_t temp_wakeup(msg_t *rx);
@@ -168,6 +199,10 @@ uint8_t temp_wakeup(msg_t *rx);
 /**
  * @brief Checks if the temperature task is still alive 
  *
+ * DATA     none
+ * RESPONSE (1) alive packet 0xa5
+ * 
+ * @param rx Pointer to message
  * @return Return TEMP_SUCCESS or error code
  */
 uint8_t temp_alive(msg_t *rx);
@@ -175,6 +210,10 @@ uint8_t temp_alive(msg_t *rx);
 /**
  * @brief Kills the task gracefully
  *
+ * DATA     none
+ * RESPONSE none
+ * 
+ * @param rx Pointer to message
  * @return Return TEMP_SUCCESS or error code
  */
 uint8_t temp_kill(msg_t *rx);

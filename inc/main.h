@@ -46,22 +46,24 @@
 #define MAIN_THREAD_LOG   3
 
 /**
- * @brief Main task commands
+ * @brief Main task API
  */
-/*typedef enum main_cmd_e {
-    MAIN_EXIT,
-} main_cmd_t;
-*/
+#define MAIN_EXIT 0
 
 /**
  * @brief Main task function
  *
  * @return Returns program exit code 
  */
-//int main(void);
+int main(int argc, char **argv);
 
 /**
  * @brief Kills all tasks and exits
+ *
+ * DATA     none
+ * RESPONSE none
+ *
+ * @param rx Pointer to message
  *
  * @return MAIN_SUCCESS or error code 
  */

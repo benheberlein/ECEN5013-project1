@@ -54,10 +54,10 @@ void *light_task(void *data) {
                     light_init(&rx);
                     break;
                 case LIGHT_READREG:
-                    light_readreg(&rx, rx.data[0]);
+                    light_readreg(&rx);
                     break;
                 case LIGHT_WRITEREG:
-                    light_writereg(&rx, rx.data[0], rx.data[1]);
+                    light_writereg(&rx);
                     break;
                 default:
                     break;
@@ -74,11 +74,13 @@ uint8_t light_init(msg_t *rx) {
     i2c = mraa_i2c_init_raw(LIGHT_I2C_BUS);
     mraa_i2c_address(i2c, LIGHT_I2C_ADDR);
 
-	return LIGHT_ERR_STUB;
+	return LIGHT_SUCCESS;
 }
 
-uint8_t light_readreg(msg_t *rx, uint8_t address) {
+uint8_t light_readreg(msg_t *rx) {
     uint8_t data;
+    uint8_t address;
+    address = rx->data[0];
         
     mraa_i2c_write_byte(i2c, LIGHT_CMD_READ | (address & LIGHT_CMD_ADDR_MASK));
     data = mraa_i2c_read_byte(i2c);
@@ -91,18 +93,22 @@ uint8_t light_readreg(msg_t *rx, uint8_t address) {
     tx.data[1] = 0;
     msg_send(&tx, rx->from);
 
-	return LIGHT_ERR_STUB;
+	return LIGHT_SUCCESS;
 }
 
-uint8_t light_writereg(msg_t *rx, uint8_t address, uint8_t data) {
+uint8_t light_writereg(msg_t *rx) {
+
+    uint8_t address, data;
+    address = rx->data[0];
+    data = rx->data[1];
 
     mraa_i2c_write_byte(i2c, LIGHT_CMD_WRITE | (address & LIGHT_CMD_ADDR_MASK));
     mraa_i2c_write_byte(i2c, data);
 
-	return LIGHT_ERR_STUB;
+	return LIGHT_SUCCESS;
 }
 
-uint8_t light_writeit(msg_t *rx, uint8_t time) {
+uint8_t light_writeit(msg_t *rx) {
 
 	return LIGHT_ERR_STUB;
 }

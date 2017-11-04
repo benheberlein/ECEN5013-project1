@@ -93,6 +93,17 @@ static const char *msg_names[] = {"/mainqueue",
 uint8_t msg_send(msg_t *tx, uint8_t to);
 
 /**
+ * @brief Send a message to the log queue
+ *
+ * @param tx The message to send
+ * @param to The queue to send the message to
+ *
+ * @return MSG_SUCCESS or error value
+ */ 
+uint8_t logmsg_send(logmsg_t *tx, uint8_t to);
+
+
+/**
  * @brief Initialize queues
  * 
  * Initialize the four message queues.

@@ -22,26 +22,91 @@
  */
 
 #include "log.h"
+#include "main.h"
 #include <stdint.h>
+#include <stdio.h>
+#include <time.h>
+#include <string.h>
+
+static char *log_level_strings[] = {"DEBUG", "INFO", "WARN", "ERROR"};
+static char *log_task_strings[] = {"MAIN", "LIGHT", "TEMP", "LOG"};
+static FILE *log_file;
 
 void *log_task(void *data) {
+
+    /* Command loop */
+    mqd_t rxq = mq_open(msg_names[MAIN_THREAD_LOG], O_RDONLY);
+    logmsg_t rx;
+    while(1) {
+        mq_receive(rxq, (char *) &rx, MSG_LOGSIZE+1, NULL);
+        if (rx.from & MSG_RSP_MASK) {
+            /* Handle response data */
+            uint16_t rx_fc = MSG_RSP(rx.from, rx.cmd);
+            switch(rx_fc) {
+                default:
+                    break;
+            }
+
+        } else {
+            /* Handle command data */
+            switch(rx.cmd) {
+                case LOG_INIT:
+                    log_init(&rx);
+                    break;
+                case LOG_LOG:
+                    log_log(&rx);
+                    break;
+                case LOG_SETPATH:
+                    log_setpath(&rx);
+                    break;
+                default:
+                    break;
+            }
+        }
+    }
+
 
 	return NULL;
 }
 
 uint8_t log_init(logmsg_t *rx) {
-	
-	return LOG_ERR_STUB;
+
+    log_file = fopen((char *)rx->data, "w+");
+    if (log_file == NULL) {
+        return LOG_ERR_FILE;
+    }
+
+	return LOG_SUCCESS;
 }
 
-uint8_t log_log(logmsg_t *rx, uint8_t *data) {
+uint8_t log_log(logmsg_t *rx) {
 
-	return LOG_ERR_STUB;
+    /* Get time */
+    time_t t;
+    struct tm *ti;
+    time(&t);
+    ti = localtime(&t);
+
+    /* Log */
+    char *p = asctime(ti);
+    p[strlen(p) - 1] = 0;
+    fprintf(log_file, "%s\t", p);
+    fprintf(log_file, "%s\t", log_task_strings[rx->from]);
+    fprintf(log_file, "%s\t", log_level_strings[rx->data[0]]);
+    fprintf(log_file, "'%s'\n", &rx->data[1]);
+    fflush(log_file);
+
+	return LOG_SUCCESS;
 }
 
-uint8_t log_setpath(logmsg_t *rx, uint8_t *data) {
+uint8_t log_setpath(logmsg_t *rx) {
 
-	return LOG_ERR_STUB;
+    if (log_file != NULL) {
+        fclose(log_file);
+    }
+    log_file = fopen((char *)rx->data, "w+");
+
+	return LOG_SUCCESS;
 }
 
 uint8_t log_alive(logmsg_t *rx) {

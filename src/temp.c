@@ -26,6 +26,7 @@
 #include "temp.h"
 #include "msg.h"
 #include "mraa.h"
+#include "main.h"
 #include <stdint.h>
 #include <byteswap.h>
 #include <mqueue.h>

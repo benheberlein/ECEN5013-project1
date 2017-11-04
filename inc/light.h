@@ -27,6 +27,7 @@
 #ifndef __LIGHT_H__
 #define __LIGHT_H__
 
+#include "msg.h"
 #include <stdint.h>
 #include <stdio.h>
 
@@ -65,7 +66,7 @@ void *light_task(void *data);
  *
  * @return Returns LIGHT_SUCCESS or error code
  */
-uint8_t light_init(void);
+uint8_t light_init(msg_t *rx);
 
 /**
  * @brief Read register in light module
@@ -74,7 +75,7 @@ uint8_t light_init(void);
  *
  * @return Returns LIGHT_SUCCESS or error code
  */
-uint8_t light_readreg(uint8_t address);
+uint8_t light_readreg(msg_t *rx, uint8_t address);
 
 /**
  * @brief Write register in light module
@@ -83,7 +84,7 @@ uint8_t light_readreg(uint8_t address);
  *
  * @return Returns LIGHT_SUCCESS or error code
  */
-uint8_t light_writereg(uint8_t address);
+uint8_t light_writereg(msg_t *rx, uint8_t address);
 
 /**
  * @brief Write integration time in light module
@@ -92,55 +93,55 @@ uint8_t light_writereg(uint8_t address);
  *
  * @return Returns LIGHT_SUCCESS or error code
  */
-uint8_t light_writeit(uint8_t time);
+uint8_t light_writeit(msg_t *rx, uint8_t time);
 
 /**
  * @brief Get the luminosity from the light module
  *
  * @return Returns LIGHT_SUCCESS or error code
  */
-uint8_t light_getlux(void);
+uint8_t light_getlux(msg_t *rx);
 
 /**
  * @brief Enable interrupts in the light module
  *
  * @return Returns LIGHT_SUCCESS or error code
  */
-uint8_t light_enableint(void);
+uint8_t light_enableint(msg_t *rx);
 
 /**
  * @brief Disable interrupts in the light module
  *
  * @return Returns LIGHT_SUCCESS or error code
  */
-uint8_t light_disableint(void);
+uint8_t light_disableint(msg_t *rx);
 
 /**
  * @brief Read identification register
  *
  * @return Returns LIGHT_SUCCESS or error code
  */
-uint8_t light_readid(void);
+uint8_t light_readid(msg_t *rx);
 
 /**
  * @brief Check if night or day
  *
  * @return Returns LIGHT_SUCCESS or error code
  */
-uint8_t light_isday(void);
+uint8_t light_isday(msg_t *rx);
 
 /**
  * @brief Check if the light task is still alive
  *
  * @return Returns LIGHT_SUCCESS or error code
  */
-uint8_t light_alive(void);
+uint8_t light_alive(msg_t *rx);
 
 /**
  * @brief Kill the light task gracefully
  *
  * @return Returns LIGHT_SUCCESS or error code
  */
-uint8_t light_kill(void);
+uint8_t light_kill(msg_t *rx);
 
 #endif /* __LIGHT_H__ */

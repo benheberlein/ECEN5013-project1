@@ -21,11 +21,11 @@
  *
  */
 
+#include "msg.h"
 #include "main.h"
 #include "light.h"
 #include "temp.h"
 #include "log.h"
-#include "msg.h"
 #include <stdint.h>
 #include <pthread.h>
 
@@ -43,7 +43,7 @@ static uint8_t __main_pthread_init(void) {
     return MAIN_ERR_STUB;
 }
 
-uint8_t main_exit(void) {
+uint8_t main_ex(msg_t *rx) {
 
     return MAIN_ERR_STUB;
 }

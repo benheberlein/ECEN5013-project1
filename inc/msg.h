@@ -24,7 +24,6 @@
 #ifndef __MSG_H__
 #define __MSG_H__
 
-#include "main.h"
 #include <stdint.h>
 #include <mqueue.h>
 
@@ -69,12 +68,12 @@ typedef struct __attribute((packed)) logmsg_s {
 /**
  * @brief Queue descriptions
  */
-#define MSG_QUEUE_TOTAL MAIN_THREAD_TOTAL
+#define MSG_QUEUE_TOTAL 4 //MAIN_THREAD_TOTAL
 #define MSG_QUEUE_PERM  0666
-#define MSG_QUEUE_MAIN  MAIN_THREAD_MAIN
-#define MSG_QUEUE_LIGHT MAIN_THREAD_LIGHT
-#define MSG_QUEUE_TEMP  MAIN_THREAD_TEMP
-#define MSG_QUEUE_LOG   MAIN_THREAD_LOG
+#define MSG_QUEUE_MAIN  0 //MAIN_THREAD_MAIN
+#define MSG_QUEUE_LIGHT 1 //MAIN_THREAD_LIGHT
+#define MSG_QUEUE_TEMP  2 //MAIN_THREAD_TEMP
+#define MSG_QUEUE_LOG   3 //MAIN_THREAD_LOG
 mqd_t msg_queues[MSG_QUEUE_TOTAL];
 struct mq_attr msg_attrs[MSG_QUEUE_TOTAL];
 static const char *msg_names[] = {"/mainqueue",

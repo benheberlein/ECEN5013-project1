@@ -24,6 +24,7 @@
 #ifndef __LOG_H__
 #define __LOG_H__
 
+#include "msg.h"
 #include <stdint.h>
 #include <stdio.h>
 
@@ -74,7 +75,7 @@ void *log_task(void *data);
  * 
  * @return Returns LOG_SUCCESS or error code
  */
-uint8_t log_init(void);
+uint8_t log_init(logmsg_t *rx);
 
 /**
  * @brief Logs the message to the file at the desired level
@@ -83,7 +84,7 @@ uint8_t log_init(void);
  *
  * @return Returns LOG_SUCCESS or error code
  */
-uint8_t log_log(uint8_t *data);
+uint8_t log_log(logmsg_t *rx, uint8_t *data);
 
 /**
  * @brief Sets the log path
@@ -92,20 +93,20 @@ uint8_t log_log(uint8_t *data);
  *
  * @return Returns LOG_SUCCESS or error code
  */
-uint8_t log_setpath(uint8_t *data);
+uint8_t log_setpath(logmsg_t *rx, uint8_t *data);
 
 /**
  * @brief Checks if the log task is still alive
  * 
  * @return Returns LOG_SUCCESS or error code
  */
-uint8_t log_alive(void);
+uint8_t log_alive(logmsg_t *rx);
 
 /**
  * @brief Kills the task gracefully
  * 
  * @return Returns LOG_SUCCESS or error code
  */
-uint8_t log_kill(void);
+uint8_t log_kill(logmsg_t *rx);
 
 #endif /* __LOG_H */

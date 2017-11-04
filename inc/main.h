@@ -24,7 +24,9 @@
 #ifndef __MAIN_H___
 #define __MAIN_H__
 
+#include "msg.h"
 #include <stdint.h>
+#include <stdio.h>
 
 /**
  * @brief Error codes
@@ -63,6 +65,6 @@
  *
  * @return MAIN_SUCCESS or error code 
  */
-uint8_t main_exit(void);
+uint8_t main_ex(msg_t *rx);
 
 #endif /* __MAIN_H__ */

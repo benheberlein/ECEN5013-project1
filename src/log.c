@@ -29,28 +29,27 @@ void *log_task(void *data) {
 	return NULL;
 }
 
-uint8_t log_init(void) {
+uint8_t log_init(logmsg_t *rx) {
 	
 	return LOG_ERR_STUB;
 }
 
-uint8_t log_log(uint8_t *data) {
+uint8_t log_log(logmsg_t *rx, uint8_t *data) {
 
 	return LOG_ERR_STUB;
 }
 
-uint8_t log_setpath(uint8_t *data) {
+uint8_t log_setpath(logmsg_t *rx, uint8_t *data) {
 
 	return LOG_ERR_STUB;
 }
 
-uint8_t log_alive(void) {
+uint8_t log_alive(logmsg_t *rx) {
 
 	return LOG_ERR_STUB;
 }
 
-uint8_t log_kill(void) {
+uint8_t log_kill(logmsg_t *rx) {
 
 	return LOG_ERR_STUB;
 }
-

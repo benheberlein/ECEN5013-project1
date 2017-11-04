@@ -25,6 +25,7 @@
  */
 
 #include "light.h"
+#include "msg.h"
 #include <stdint.h>
 
 void *light_task(void *data) {
@@ -32,57 +33,57 @@ void *light_task(void *data) {
 	return NULL;
 }
 
-uint8_t light_init(void) {
+uint8_t light_init(msg_t *rx) {
 
 	return LIGHT_ERR_STUB;
 }
 
-uint8_t light_readreg(uint8_t address) {
+uint8_t light_readreg(msg_t *rx, uint8_t address) {
 
 	return LIGHT_ERR_STUB;
 }
 
-uint8_t light_writereg(uint8_t address) {
+uint8_t light_writereg(msg_t *rx, uint8_t address) {
 
 	return LIGHT_ERR_STUB;
 }
 
-uint8_t light_writeit(uint8_t time) {
+uint8_t light_writeit(msg_t *rx, uint8_t time) {
 
 	return LIGHT_ERR_STUB;
 }
 
-uint8_t light_getlux(void) {
+uint8_t light_getlux(msg_t *rx) {
 
 	return LIGHT_ERR_STUB;
 }
 
-uint8_t light_enableint(void) {
+uint8_t light_enableint(msg_t *rx) {
 
 	return LIGHT_ERR_STUB;
 }
 
-uint8_t light_disableint(void) {
+uint8_t light_disableint(msg_t *rx) {
 
 	return LIGHT_ERR_STUB;
 }
 
-uint8_t light_readid(void) {
+uint8_t light_readid(msg_t *rx) {
 
 	return LIGHT_ERR_STUB;
 }
 
-uint8_t light_isday(void) {
+uint8_t light_isday(msg_t *rx) {
 
 	return LIGHT_ERR_STUB;
 }
 
-uint8_t light_alive(void) {
+uint8_t light_alive(msg_t *rx) {
 
 	return LIGHT_ERR_STUB;
 }
 
-uint8_t light_kill(void) {
+uint8_t light_kill(msg_t *rx) {
 
 	return LIGHT_ERR_STUB;
 }

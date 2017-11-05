@@ -27,10 +27,35 @@
 #include <stdio.h>
 #include <time.h>
 #include <string.h>
+#include <pthread.h>
 
 static FILE *log_file;
+static void __log_terminate(void *arg) {
+    if (log_file != NULL) {
+        /* Get time */
+        time_t t;
+        struct tm *ti;
+        time(&t);
+        ti = localtime(&t);
+
+        /* Log */
+        char *p = asctime(ti);
+        p[strlen(p) - 1] = 0;
+        fprintf(log_file, "%s\t", p);
+        fprintf(log_file, "%s\t", log_task_strings[MAIN_THREAD_LOG]);
+        fprintf(log_file, "%s\t", log_level_strings[LOG_LEVEL_WARN]);
+        fprintf(log_file, "'%s'\n", "Closing log thread gracefully");
+        fflush(log_file);
+
+        fclose(log_file);
+        log_file = NULL;
+    }
+}
 
 void *log_task(void *data) {
+
+    /* Register exit handler */
+    pthread_cleanup_push(__log_terminate, "log");
 
     /* Command loop */
     mqd_t rxq = mq_open(msg_names[MAIN_THREAD_LOG], O_RDONLY);
@@ -66,16 +91,30 @@ void *log_task(void *data) {
         }
     }
 
+    pthread_cleanup_pop(1);
 
 	return NULL;
 }
 
 uint8_t log_init(logmsg_t *rx) {
 
-    log_file = fopen((char *)rx->data, "w+");
+    if (log_file != NULL) {
+        fclose(log_file);
+        log_file = NULL;
+    }
+
+    if (rx->data[0] == 1) {
+        log_file = fopen((char *)(rx->data+1), "w+");
+    } else {
+        log_file = fopen((char *)(rx->data+1), "a+");
+    }
     if (log_file == NULL) {
         return LOG_ERR_FILE;
     }
+
+    logmsg_t ltx;
+    LOG_FMT(MAIN_THREAD_LOG, LOG_LEVEL_INFO, ltx, "Initialized logger");
+    logmsg_send(&ltx, MAIN_THREAD_LOG);
 
 	return LOG_SUCCESS;
 }

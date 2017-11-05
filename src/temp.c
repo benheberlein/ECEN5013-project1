@@ -25,8 +25,9 @@
 
 #include "temp.h"
 #include "msg.h"
-#include "mraa.h"
+#include "log.h"
 #include "main.h"
+#include <mraa.h>
 #include <stdint.h>
 #include <byteswap.h>
 #include <mqueue.h>
@@ -36,7 +37,16 @@
  */
 static mraa_i2c_context i2c;
 
+void __temp_terminate(void *arg) {
+    logmsg_t ltx;
+    LOG_FMT(MAIN_THREAD_TEMP, LOG_LEVEL_WARN, ltx, "Killing temperature module gracefully");
+    logmsg_send(&ltx, MAIN_THREAD_LOG);
+}
+
 void *temp_task(void *data) {
+
+    /* Register exit handler */
+    pthread_cleanup_push(__temp_terminate, "temp");
 
     /* Command loop */
     mqd_t rxq = mq_open(msg_names[MAIN_THREAD_TEMP], O_RDONLY);
@@ -72,6 +82,8 @@ void *temp_task(void *data) {
         }
     }
 
+    pthread_cleanup_pop(1);
+
     return NULL;
 }
 
@@ -80,6 +92,10 @@ uint8_t temp_init(msg_t *rx) {
     mraa_init();
     i2c = mraa_i2c_init_raw(TEMP_I2C_BUS);
     mraa_i2c_address(i2c, TEMP_I2C_ADDR);
+
+    logmsg_t ltx;
+    LOG_FMT(MAIN_THREAD_TEMP, LOG_LEVEL_INFO, ltx, "Initialized temperature module");
+    logmsg_send(&ltx, MAIN_THREAD_LOG);
 
     return TEMP_SUCCESS;
 }

@@ -36,6 +36,7 @@
 #include <stdlib.h>
 
 static const char *MAIN_USAGE = "One optional argument for log file name.\n";
+static char *log_name;
 
 static pthread_t main_tasks[MAIN_THREAD_TOTAL];
 static uint8_t main_alive[MAIN_THREAD_TOTAL];
@@ -56,7 +57,7 @@ static uint8_t __main_timer_init(void) {
     se.sigev_notify_attributes = NULL;
 
     ts.it_value.tv_sec = 0;
-    ts.it_value.tv_nsec = 100000000;
+    ts.it_value.tv_nsec = 500000000;
     ts.it_interval.tv_sec = 0;
     ts.it_interval.tv_nsec = 0;
 
@@ -96,9 +97,15 @@ static uint8_t __main_timer_init(void) {
 
 static void __main_heartbeat(union sigval arg) {    
 
+    logmsg_t ltx;
+    LOG_FMT(MAIN_THREAD_MAIN, LOG_LEVEL_INFO, ltx, "Heartbeat check");
+    logmsg_send(&ltx, MAIN_THREAD_LOG);
+
     /* Send aliveness requests */
     for (int i = 1; i < MAIN_THREAD_TOTAL; i++) {
         /* Check if we have recieved a confirmation from the last time */
+        if (i == 3) main_alive[i] = 0;
+
         if (main_alive[i] != 0xa5) {
             logmsg_t ltx;
             LOG_FMT(MAIN_THREAD_MAIN, LOG_LEVEL_ERROR, ltx, "%s missed a heartbeat check, restarting thread", log_task_strings[i]);
@@ -112,20 +119,46 @@ static void __main_heartbeat(union sigval arg) {
 			        LOG_FMT(MAIN_THREAD_MAIN, LOG_LEVEL_ERROR, ltx, "Couldn't restart thread");
             		logmsg_send(&ltx, MAIN_THREAD_LOG);
  
-                }         
+                } else {
+    	            /* Initialize temperature module */
+                	msg_t tx;
+                	tx.from = MAIN_THREAD_MAIN;
+                	tx.cmd = TEMP_INIT;
+                	tx.data[0] = 0;
+                    msg_send(&tx, MAIN_THREAD_TEMP);
+                }
             } else if (i == MAIN_THREAD_LIGHT) {
                 if (pthread_create(&main_tasks[MAIN_THREAD_LIGHT], NULL, light_task, NULL)) {
                     logmsg_t ltx;
                     LOG_FMT(MAIN_THREAD_MAIN, LOG_LEVEL_ERROR, ltx, "Couldn't restart thread");
                     logmsg_send(&ltx, MAIN_THREAD_LOG);
     
+                } else {
+                    /* Initialize light module */
+                    msg_t tx;
+                    tx.from = MAIN_THREAD_MAIN;
+                    tx.cmd = LIGHT_INIT;
+                    tx.data[0] = 0;
+                    msg_send(&tx, MAIN_THREAD_LIGHT);
                 }
             } else if (i == MAIN_THREAD_LOG) {
                 if (pthread_create(&main_tasks[MAIN_THREAD_LOG], NULL, log_task, NULL)) {
                     logmsg_t ltx;
                     LOG_FMT(MAIN_THREAD_MAIN, LOG_LEVEL_ERROR, ltx, "Couldn't restart thread");
                     logmsg_send(&ltx, MAIN_THREAD_LOG);    
-                }           
+                } else {
+                    /* Initialize log */
+                    logmsg_t ltx;
+                    ltx.from = MAIN_THREAD_MAIN;
+                    ltx.cmd = LOG_INIT;
+                    ltx.data[0] = 0;
+                    strcpy((char *) (ltx.data+1), log_name);
+                    logmsg_send(&ltx, MAIN_THREAD_LOG);      
+
+                    LOG_FMT(MAIN_THREAD_MAIN, LOG_LEVEL_INFO, ltx, "Log reinitialized");
+                    logmsg_send(&ltx, MAIN_THREAD_LOG);
+
+                }     
             }
             
         } else {
@@ -167,21 +200,18 @@ int main(int argc, char **argv) {
     msg_init();
     __main_pthread_init();
 
-    /* Initialize logger */
-    char *log_file;
+    /* Initialize logger */ 
     if (argc == 2) {
-        log_file = argv[1];
+        log_name = argv[1];
     } else {
-        log_file = "project1.log";
+        log_name = "project1.log";
     }
     
     logmsg_t ltx;
     ltx.from = MAIN_THREAD_MAIN;
     ltx.cmd = LOG_INIT;
-    strcpy((char *) ltx.data, log_file);
-    logmsg_send(&ltx, MAIN_THREAD_LOG);
-
-    LOG_FMT(MAIN_THREAD_MAIN, LOG_LEVEL_INFO, ltx, "Initialized logger");
+    ltx.data[0] = 1;
+    strcpy((char *) (ltx.data+1), log_name);
     logmsg_send(&ltx, MAIN_THREAD_LOG);
 
 	/* Initialize temperature module */
@@ -191,17 +221,11 @@ int main(int argc, char **argv) {
 	tx.data[0] = 0;
     msg_send(&tx, MAIN_THREAD_TEMP);
 
-    LOG_FMT(MAIN_THREAD_MAIN, LOG_LEVEL_INFO, ltx, "Initialized temperature module");
-    logmsg_send(&ltx, MAIN_THREAD_LOG);
-
 	/* Initialize light module */
 	tx.from = MAIN_THREAD_MAIN;
 	tx.cmd = LIGHT_INIT;
 	tx.data[0] = 0;
     msg_send(&tx, MAIN_THREAD_LIGHT);
-
-    LOG_FMT(MAIN_THREAD_MAIN, LOG_LEVEL_INFO, ltx, "Initialized light module");
-    logmsg_send(&ltx, MAIN_THREAD_LOG);
 
     /* Test read temp command */
 	tx.from = MAIN_THREAD_MAIN;
@@ -286,6 +310,10 @@ int main(int argc, char **argv) {
         }
         
     }
+
+    pthread_join(main_tasks[MAIN_THREAD_TEMP], NULL);
+    pthread_join(main_tasks[MAIN_THREAD_LIGHT], NULL);
+    pthread_join(main_tasks[MAIN_THREAD_LOG], NULL);
 
     return 0;
 }

@@ -82,7 +82,8 @@ void *log_task(void *data);
 /**
  * @brief Initialize log function
  * 
- * DATA     (...) ASCII string for path
+ * DATA     (1)     1 for new file 0 for append
+ *          (...)   ASCII string for path
  * RESPONSE none
  * 
  * @param rx Pointer to message

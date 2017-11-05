@@ -18,7 +18,8 @@ SRCS  = main.c \
 
 OBJS := $(SRCS:.c=.o)
 
-CFLAGS = -std=gnu99 -g -O0 -Wall -Wextra -Wno-unused-parameter -I$(INC_DIR) 
+CFLAGS = -std=gnu99 -g -O0 -Wall -Wextra -Wno-unused-parameter -Wno-unused-variable -I$(INC_DIR) 
+
 LDFLAGS = -lrt -lmraa -pthread
 
 CC = gcc

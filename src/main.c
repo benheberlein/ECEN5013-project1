@@ -311,7 +311,17 @@ static uint8_t __main_pthread_init(void) {
 
 uint8_t main_exit(msg_t *rx) {
 
-    return MAIN_ERR_STUB;
+    logmsg_t ltx;
+    LOG_FMT(MAIN_THREAD_MAIN, LOG_LEVEL_INFO, ltx, "Main has recieved signal to exit. Goodbye");
+    logmsg_send(&ltx, MAIN_THREAD_LOG);
+
+    for (int i = 1; i < MAIN_THREAD_TOTAL; i++) {
+        pthread_cancel(main_tasks[i]);
+    }
+
+    exit(0);
+
+    return MAIN_SUCCESS;
 }
 
 int main(int argc, char **argv) {
@@ -407,6 +417,9 @@ int main(int argc, char **argv) {
         } else {
             /* Handle command data */
             switch(rx.cmd) {
+                case MAIN_EXIT:
+                    main_exit(&rx);
+                    break;
                 default:
                     break;
             }

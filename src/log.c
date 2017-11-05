@@ -29,7 +29,14 @@
 #include <string.h>
 #include <pthread.h>
 
+/**
+ * @brief Private variables
+ */ 
 static FILE *log_file;
+
+/**
+ * @brief Private functions
+ */
 static void __log_terminate(void *arg) {
     if (log_file != NULL) {
         /* Get time */
@@ -84,6 +91,9 @@ void *log_task(void *data) {
                     break;
                 case LOG_SETPATH:
                     log_setpath(&rx);
+                    break;
+                case LOG_KILL:
+                    log_kill(&rx);
                     break;
                 default:
                     break;
@@ -166,6 +176,8 @@ uint8_t log_alive(logmsg_t *rx) {
 }
 
 uint8_t log_kill(logmsg_t *rx) {
+
+    pthread_exit(0);
 
 	return LOG_ERR_STUB;
 }

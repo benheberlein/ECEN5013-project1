@@ -35,6 +35,8 @@
  * @brief Error codes 
  */
 #define LIGHT_SUCCESS       0
+#define LIGHT_ERR_INIT      1
+#define LIGHT_ERR_PARAM     2
 #define LIGHT_ERR_STUB      126
 #define LIGHT_ERR_UNKNOWN   127
 
@@ -74,6 +76,24 @@
 #define LIGHT_REG_DATA0H    13
 #define LIGHT_REG_DATA1L    14
 #define LIGHT_REG_DATA1H    15
+
+/**
+ * @brief Interrupt options
+ */
+#define LIGHT_INT_EN (0x01 << 4)
+#define LIGHT_INT_DIS (0x00 << 4)
+
+/**
+ * @brief Integration times in ms
+ */
+#define LIGHT_INT_13_7 0
+#define LIGHT_INT_101  1
+#define LIGHT_INT_402  2
+
+/**
+ * @brief Day or night calculation
+ */
+#define LIGHT_DAY_THRESH 10.0
 
 /** 
  * @brief light task function

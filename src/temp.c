@@ -40,6 +40,9 @@
 static mraa_i2c_context i2c;
 static float temperature_c = 123.456;
 
+/**
+ * @brief Private functions
+ */
 static uint16_t  __temp_i2c_read(uint8_t address);
 static void __temp_i2c_write(uint16_t data, uint8_t address);
 static void __temp_check(union sigval arg);
@@ -86,7 +89,7 @@ static uint8_t __temp_timer_init(void) {
 
     if (timer_settime(tmr, 0, &ts, 0) == -1) {
         logmsg_t ltx;
-        LOG_FMT(MAIN_THREAD_MAIN, LOG_LEVEL_ERROR, ltx, "Failed to set temp check timer");
+        LOG_FMT(MAIN_THREAD_TEMP, LOG_LEVEL_ERROR, ltx, "Failed to set temp check timer");
         logmsg_send(&ltx, MAIN_THREAD_LOG);
     }
 
@@ -271,7 +274,7 @@ uint8_t temp_gettemp(msg_t *rx) {
     tx.data[5] = 0;
     msg_send(&tx, rx->from);
 
-    return TEMP_ERR_STUB;
+    return TEMP_SUCCESS;
 }
 
 uint8_t temp_setconv(msg_t *rx) {
@@ -299,7 +302,7 @@ uint8_t temp_wakeup(msg_t *rx) {
 
     __temp_i2c_write(TEMP_REG_CTRL, data);
 
-    return TEMP_ERR_STUB;
+    return TEMP_SUCCESS;
 }
 
 uint8_t temp_alive(msg_t *rx) {
@@ -318,5 +321,5 @@ uint8_t temp_kill(msg_t *rx) {
 
     pthread_exit(0);
 
-    return TEMP_ERR_STUB;
+    return TEMP_SUCCESS;
 }

@@ -42,13 +42,13 @@
 #define TEMP_READREG        1
 #define TEMP_WRITEREG       2
 #define TEMP_WRITECONFIG    3
-//#defin MSG_CMD_TEMP_WRITEPTR
 #define TEMP_GETTEMP        4
-#define TEMP_SETRES         5
+#define TEMP_SETCONV        5
 #define TEMP_SHUTDOWN       6
 #define TEMP_WAKEUP         7
 #define TEMP_ALIVE          8
 #define TEMP_KILL           9
+#define TEMP_WRITEPTR       10
 
 /**
  * @brief I2C and sensor macros
@@ -80,6 +80,24 @@
 #define TEMP_FMT_FAR 1
 #define TEMP_FMT_KEL 2
 
+/**
+ * @brief Conversion rates
+ */
+#define TEMP_CONV_0_25HZ 0
+#define TEMP_CONV_1HZ    1
+#define TEMP_CONV_4HZ    2
+#define TEMP_CONV_8Hz    3
+
+/**
+ * @brief Resolution per DN (C)
+ */
+#define TEMP_RES 0.0625
+
+/**
+ * @brief Format strings
+ */
+static const char *temp_fmt_strings[] = {"Celcius", "Farenheit", "Kelvin"};
+
 /** 
  * @brief temp task function
  *
@@ -104,8 +122,9 @@ uint8_t temp_init(msg_t *rx);
 /**
  * @brief Read a register in the temperature module
  * 
- * DATA     (1) address to read
+ * DATA     (2) address to read
  * RESPONSE (1) read data
+ *          (2) address that was read
  * 
  * @param rx Pointer to message
  *
@@ -155,6 +174,7 @@ uint8_t temp_writeptr(msg_t *rx);
  * 
  * DATA     (1) format type
  * RESPONSE (4) data as float
+ *          (1) format type
  * 
  * @param rx Pointer to message
  *
@@ -163,16 +183,16 @@ uint8_t temp_writeptr(msg_t *rx);
 uint8_t temp_gettemp(msg_t *rx);
 
 /**
- * @brief Configures the sensor resolution to the specified amount
+ * @brief Configures the sensor conversion rate to the specified amount
  * 
- * DATA     (4) resolution as fload
+ * DATA     (1) Conversion rate
  * RESPONSE none
  * 
  * @param rx Pointer to message
  *
  * @return Return TEMP_SUCCESS or error code
  */
-uint8_t temp_setres(msg_t *rx);
+uint8_t temp_setconv(msg_t *rx);
 
 /**
  * @brief Puts the temperature module to sleep

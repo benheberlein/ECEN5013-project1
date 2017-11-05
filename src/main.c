@@ -37,6 +37,7 @@
 
 static const char *MAIN_USAGE = "One optional argument for log file name.\n";
 static char *log_name;
+static float local_temp;
 
 static pthread_t main_tasks[MAIN_THREAD_TOTAL];
 static uint8_t main_alive[MAIN_THREAD_TOTAL];
@@ -44,6 +45,7 @@ static uint8_t main_alive[MAIN_THREAD_TOTAL];
 static void __main_heartbeat(union sigval arg);
 static uint8_t __main_timer_init(void);
 static uint8_t __main_pthread_init(void);
+
 
 static uint8_t __main_timer_init(void) {
 
@@ -104,8 +106,6 @@ static void __main_heartbeat(union sigval arg) {
     /* Send aliveness requests */
     for (int i = 1; i < MAIN_THREAD_TOTAL; i++) {
         /* Check if we have recieved a confirmation from the last time */
-        if (i == 3) main_alive[i] = 0;
-
         if (main_alive[i] != 0xa5) {
             logmsg_t ltx;
             LOG_FMT(MAIN_THREAD_MAIN, LOG_LEVEL_ERROR, ltx, "%s missed a heartbeat check, restarting thread", log_task_strings[i]);
@@ -267,6 +267,13 @@ int main(int argc, char **argv) {
 	tx.data[1] = 0;
     msg_send(&tx, MAIN_THREAD_LIGHT);
 
+    /* Test get temp command */
+    tx.from = MAIN_THREAD_MAIN;
+    tx.cmd = TEMP_GETTEMP;
+    tx.data[0] = TEMP_FMT_KEL;
+    tx.data[1] = 0;
+    msg_send(&tx, MAIN_THREAD_TEMP);
+
     /* Initialize heartbeat timer */
     __main_timer_init();
 
@@ -280,8 +287,12 @@ int main(int argc, char **argv) {
             /* Handle response data */
 			uint16_t rx_fc = MSG_RSP(rx.from, rx.cmd);
 			switch(rx_fc) {
+                case MSG_RSP(MAIN_THREAD_TEMP, TEMP_GETTEMP):
+                    memcpy(&local_temp, rx.data, 4);                   
+                    LOG_FMT(MAIN_THREAD_MAIN, LOG_LEVEL_INFO, ltx, "Recieved temperature value %f %s", local_temp, temp_fmt_strings[rx.data[4]]);
+                    logmsg_send(&ltx, MAIN_THREAD_LOG);
+                    break;
                 case MSG_RSP(MAIN_THREAD_TEMP, TEMP_READREG):
-
                     LOG_FMT(MAIN_THREAD_MAIN, LOG_LEVEL_INFO, ltx, "Register value is %d", rx.data[1] << 8 | rx.data[0]);
                     logmsg_send(&ltx, MAIN_THREAD_LOG);
                     break;

@@ -35,19 +35,83 @@
 #include <time.h>
 #include <stdlib.h>
 
+/**
+ * Private variables
+ */
 static const char *MAIN_USAGE = "One optional argument for log file name.\n";
 static char *log_name;
 static float local_temp;
-
+static float local_lux;
 static pthread_t main_tasks[MAIN_THREAD_TOTAL];
 static uint8_t main_alive[MAIN_THREAD_TOTAL];
+static char *led_names[] = {"/sys/devices/platform/leds/leds/beaglebone:green:usr0/brightness",
+                            "/sys/devices/platform/leds/leds/beaglebone:green:usr1/brightness",
+                            "/sys/devices/platform/leds/leds/beaglebone:green:usr2/brightness",
+                            "/sys/devices/platform/leds/leds/beaglebone:green:usr3/brightness"};
 
+/**
+ * @brief private functions
+ */
 static void __main_heartbeat(union sigval arg);
-static uint8_t __main_timer_init(void);
+static void __main_logic(union sigval argv);
+static uint8_t __main_heartbeat_init(void);
+static uint8_t __main_logic_init(void);
 static uint8_t __main_pthread_init(void);
+static uint8_t __main_led_set(uint8_t led, uint8_t state);
 
+static uint8_t __main_led_set(uint8_t led, uint8_t state) {
+    if (led > 3) {
+        logmsg_t ltx;
+        LOG_FMT(MAIN_THREAD_MAIN, LOG_LEVEL_ERROR, ltx, "Bad value in call to LED set");
+        logmsg_send(&ltx, MAIN_THREAD_LOG);
 
-static uint8_t __main_timer_init(void) {
+        return MAIN_ERR_PARAM;
+    }
+
+    FILE *f = fopen(led_names[led], "w");
+    if (state) {
+        fputc('1', f);
+    } else {
+        fputc('0', f);
+    }
+    fclose(f);
+
+    return MAIN_SUCCESS;
+} 
+
+static uint8_t __main_logic_init(void) {
+
+    timer_t tmr;
+    struct itimerspec ts;
+    struct sigevent se;
+
+    se.sigev_notify = SIGEV_THREAD;
+    se.sigev_value.sival_ptr = &tmr;
+    se.sigev_notify_function = __main_logic;
+    se.sigev_notify_attributes = NULL;
+
+    ts.it_value.tv_sec = 0;
+    ts.it_value.tv_nsec = MAIN_TIMER_LOGIC_NS;
+    ts.it_interval.tv_sec = 0;
+    ts.it_interval.tv_nsec = 0;
+
+    if (timer_create(CLOCK_REALTIME, &se, &tmr) == -1) {
+        logmsg_t ltx;
+        LOG_FMT(MAIN_THREAD_MAIN, LOG_LEVEL_ERROR, ltx, "Failed to start logic timer");
+        
+        logmsg_send(&ltx, MAIN_THREAD_LOG);
+    }
+
+    if (timer_settime(tmr, 0, &ts, 0) == -1) {
+        logmsg_t ltx;
+        LOG_FMT(MAIN_THREAD_MAIN, LOG_LEVEL_ERROR, ltx, "Failed to set logic timer");
+        logmsg_send(&ltx, MAIN_THREAD_LOG);
+    }
+
+    return MAIN_SUCCESS;
+}
+
+static uint8_t __main_heartbeat_init(void) {
 
     timer_t tmr;
     struct itimerspec ts;
@@ -59,7 +123,7 @@ static uint8_t __main_timer_init(void) {
     se.sigev_notify_attributes = NULL;
 
     ts.it_value.tv_sec = 0;
-    ts.it_value.tv_nsec = 500000000;
+    ts.it_value.tv_nsec = MAIN_TIMER_HEARTBEAT_NS;
     ts.it_interval.tv_sec = 0;
     ts.it_interval.tv_nsec = 0;
 
@@ -97,6 +161,64 @@ static uint8_t __main_timer_init(void) {
     return MAIN_SUCCESS;
 }
 
+static void __main_logic(union sigval arg) {
+    logmsg_t ltx;
+    LOG_FMT(MAIN_THREAD_MAIN, LOG_LEVEL_INFO, ltx, "Logic timer");
+    logmsg_send(&ltx, MAIN_THREAD_LOG);
+
+    /* See if we need to set LEDs (LED3 is handled in heartbeat for errors) */
+    if (local_temp > MAIN_TOOHOT) {
+        __main_led_set(MAIN_LED0, MAIN_LED_ON);
+        LOG_FMT(MAIN_THREAD_MAIN, LOG_LEVEL_INFO, ltx, "It is too hot in here!");
+        logmsg_send(&ltx, MAIN_THREAD_LOG);
+    } else if (local_temp < MAIN_TOOCOLD) {
+         LOG_FMT(MAIN_THREAD_MAIN, LOG_LEVEL_INFO, ltx, "It is too cold in here!");
+         logmsg_send(&ltx, MAIN_THREAD_LOG);
+       __main_led_set(MAIN_LED1, MAIN_LED_ON);
+    } else {
+        __main_led_set(MAIN_LED0, MAIN_LED_OFF);
+        __main_led_set(MAIN_LED1, MAIN_LED_OFF);
+    }
+
+    if (local_lux > MAIN_TOOBRIGHT) {
+        __main_led_set(MAIN_LED2, MAIN_LED_ON);
+        LOG_FMT(MAIN_THREAD_MAIN, LOG_LEVEL_INFO, ltx, "It is too bright in here!");
+        logmsg_send(&ltx, MAIN_THREAD_LOG);
+    } else {
+        __main_led_set(MAIN_LED2, MAIN_LED_OFF);
+    }
+
+    /* Get temperature in three different formats */
+    msg_t tx;
+    tx.from = MAIN_THREAD_MAIN;
+    tx.cmd = TEMP_GETTEMP;
+    tx.data[0] = TEMP_FMT_CEL;
+    tx.data[1] = 0;
+    msg_send(&tx, MAIN_THREAD_TEMP); 
+
+    tx.from = MAIN_THREAD_MAIN;
+    tx.cmd = TEMP_GETTEMP;
+    tx.data[0] = TEMP_FMT_FAR;
+    tx.data[1] = 0;
+    msg_send(&tx, MAIN_THREAD_TEMP); 
+
+    tx.from = MAIN_THREAD_MAIN;
+    tx.cmd = TEMP_GETTEMP;
+    tx.data[0] = TEMP_FMT_KEL;
+    tx.data[1] = 0;
+    msg_send(&tx, MAIN_THREAD_TEMP); 
+
+    /* Get lux */
+    tx.from = MAIN_THREAD_MAIN;
+    tx.cmd = LIGHT_GETLUX;
+    tx.data[0] = 0;
+    msg_send(&tx, MAIN_THREAD_LIGHT);
+
+    /* Restart timer */
+    __main_logic_init();
+
+}
+
 static void __main_heartbeat(union sigval arg) {    
 
     logmsg_t ltx;
@@ -110,6 +232,7 @@ static void __main_heartbeat(union sigval arg) {
             logmsg_t ltx;
             LOG_FMT(MAIN_THREAD_MAIN, LOG_LEVEL_ERROR, ltx, "%s missed a heartbeat check, restarting thread", log_task_strings[i]);
             logmsg_send(&ltx, MAIN_THREAD_LOG);
+            __main_led_set(MAIN_LED3, MAIN_LED_ON);
 
             /* Kill thread and restart */
             pthread_cancel(main_tasks[i]);
@@ -167,7 +290,7 @@ static void __main_heartbeat(union sigval arg) {
     }
 
     /* Restart timer and send alive packets*/
-    __main_timer_init();
+    __main_heartbeat_init();
 }
 
 static uint8_t __main_pthread_init(void) {
@@ -227,55 +350,17 @@ int main(int argc, char **argv) {
 	tx.data[0] = 0;
     msg_send(&tx, MAIN_THREAD_LIGHT);
 
-    /* Test read temp command */
-	tx.from = MAIN_THREAD_MAIN;
-	tx.cmd = TEMP_READREG;
-	tx.data[0] = TEMP_REG_HIGH;
-	tx.data[1] = 0;
-    msg_send(&tx, MAIN_THREAD_TEMP);
-
-    tx.from = MAIN_THREAD_MAIN;
-	tx.cmd = TEMP_WRITEREG;
-	tx.data[0] = TEMP_REG_HIGH;
-	tx.data[1] = 0x00;
-    tx.data[2] = 0xa5;
-    msg_send(&tx, MAIN_THREAD_TEMP);
-
-    tx.from = MAIN_THREAD_MAIN;
-	tx.cmd = TEMP_READREG;
-	tx.data[0] = TEMP_REG_HIGH;
-	tx.data[1] = 0;
-    msg_send(&tx, MAIN_THREAD_TEMP);
-
-    /* Test read light command */
-	tx.from = MAIN_THREAD_MAIN;
-	tx.cmd = LIGHT_READREG;
-	tx.data[0] = LIGHT_REG_TIME;
-	tx.data[1] = 0;
-    msg_send(&tx, MAIN_THREAD_LIGHT);
-
-    tx.from = MAIN_THREAD_MAIN;
-	tx.cmd = LIGHT_WRITEREG;
-	tx.data[0] = LIGHT_REG_TIME;
-	tx.data[1] = 0x01;
-    tx.data[2] = 0;
-    msg_send(&tx, MAIN_THREAD_LIGHT);
-
-    tx.from = MAIN_THREAD_MAIN;
-	tx.cmd = LIGHT_READREG;
-	tx.data[0] = LIGHT_REG_TIME;
-	tx.data[1] = 0;
-    msg_send(&tx, MAIN_THREAD_LIGHT);
-
-    /* Test get temp command */
-    tx.from = MAIN_THREAD_MAIN;
-    tx.cmd = TEMP_GETTEMP;
-    tx.data[0] = TEMP_FMT_KEL;
-    tx.data[1] = 0;
-    msg_send(&tx, MAIN_THREAD_TEMP);
-
     /* Initialize heartbeat timer */
-    __main_timer_init();
+    __main_heartbeat_init();
+
+    /* Initialize logic timer */
+    __main_logic_init();
+
+    /* Initialize LEDs */
+    __main_led_set(MAIN_LED3, MAIN_LED_OFF);
+    __main_led_set(MAIN_LED2, MAIN_LED_OFF);
+    __main_led_set(MAIN_LED1, MAIN_LED_OFF);
+    __main_led_set(MAIN_LED0, MAIN_LED_OFF);        
 
     /* Command loop */
     mqd_t rxq = mq_open(msg_names[MAIN_THREAD_MAIN], O_RDONLY);
@@ -287,8 +372,15 @@ int main(int argc, char **argv) {
             /* Handle response data */
 			uint16_t rx_fc = MSG_RSP(rx.from, rx.cmd);
 			switch(rx_fc) {
+                case MSG_RSP(MAIN_THREAD_LIGHT, LIGHT_GETLUX):
+                    memcpy(&local_lux, rx.data, 4);                                       
+                    LOG_FMT(MAIN_THREAD_MAIN, LOG_LEVEL_INFO, ltx, "Recieved light value %f lux", local_lux);
+                    logmsg_send(&ltx, MAIN_THREAD_LOG);
+                    break;
                 case MSG_RSP(MAIN_THREAD_TEMP, TEMP_GETTEMP):
-                    memcpy(&local_temp, rx.data, 4);                   
+                    if (rx.data[4] == TEMP_FMT_CEL) {
+                        memcpy(&local_temp, rx.data, 4); 
+                    }                    
                     LOG_FMT(MAIN_THREAD_MAIN, LOG_LEVEL_INFO, ltx, "Recieved temperature value %f %s", local_temp, temp_fmt_strings[rx.data[4]]);
                     logmsg_send(&ltx, MAIN_THREAD_LOG);
                     break;

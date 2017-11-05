@@ -76,7 +76,7 @@ static uint8_t __temp_timer_init(void) {
     se.sigev_notify_attributes = NULL;
 
     ts.it_value.tv_sec = 0;
-    ts.it_value.tv_nsec = 260000000;
+    ts.it_value.tv_nsec = TEMP_TIMER_NS;
     ts.it_interval.tv_sec = 0;
     ts.it_interval.tv_nsec = 0;
 

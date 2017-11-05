@@ -93,7 +93,12 @@
 /**
  * @brief Day or night calculation
  */
-#define LIGHT_DAY_THRESH 10.0
+#define LIGHT_DAY_THRESH 3.0
+
+/**
+ * @brief Lux get timer
+ */
+#define LIGHT_TIMER_NS 200000000
 
 /** 
  * @brief light task function

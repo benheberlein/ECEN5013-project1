@@ -34,6 +34,7 @@
  */
 #define MAIN_SUCCESS		0
 #define MAIN_ERR_INIT       1
+#define MAIN_ERR_PARAM      2
 #define MAIN_ERR_STUB 		126
 #define MAIN_ERR_UNKNOWN	127
 
@@ -50,6 +51,29 @@
  * @brief Main task API
  */
 #define MAIN_EXIT 0
+
+/**
+ * @brief Main timer durations
+ */
+#define MAIN_TIMER_HEARTBEAT_NS 500000000
+#define MAIN_TIMER_LOGIC_NS     400000000
+
+/**
+ * @brief LEDs
+ */ 
+#define MAIN_LED0       0
+#define MAIN_LED1       1
+#define MAIN_LED2       2
+#define MAIN_LED3       3
+#define MAIN_LED_ON     1
+#define MAIN_LED_OFF    0
+
+/**
+ * @brief Logic for leds
+ */
+#define MAIN_TOOCOLD    10.0
+#define MAIN_TOOHOT     30.0
+#define MAIN_TOOBRIGHT  50.0
 
 /**
  * @brief Main task function

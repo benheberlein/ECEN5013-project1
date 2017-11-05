@@ -62,7 +62,7 @@ static uint8_t __light_timer_init(void) {
     se.sigev_notify_attributes = NULL;
 
     ts.it_value.tv_sec = 0;
-    ts.it_value.tv_nsec = 200000000;
+    ts.it_value.tv_nsec = LIGHT_TIMER_NS;
     ts.it_interval.tv_sec = 0;
     ts.it_interval.tv_nsec = 0;
 

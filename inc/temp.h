@@ -94,6 +94,11 @@
 #define TEMP_RES 0.0625
 
 /**
+ * @brief Temperature update timer
+ */
+#define TEMP_TIMER_NS 260000000
+
+/**
  * @brief Format strings
  */
 static const char *temp_fmt_strings[] = {"Celcius", "Farenheit", "Kelvin"};

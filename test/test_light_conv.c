@@ -25,8 +25,72 @@
 #include <cmocka.h>
 #include <stdlib.h>
 #include <limits.h>
+#include <stdio.h>
 
 void test_light_conv(void) {
-    
-    return;
+
+    uint16_t ch0, ch1;
+    float ret;
+
+    /* Divide by zero handling */
+    ch0 = 0;
+    ch1 = 0;
+    ret = __light_convert_lux(ch0, ch1);
+    assert_true(ret == 0.0);
+
+    /* First range from data sheet */
+    ch0 = 3;
+    ch1 = 1;
+    ret = __light_convert_lux(ch0, ch1);
+    assert_true(ret > 0.05 && ret < 0.052); 
+
+    ch0 = 25;
+    ch1 = 4;
+    ret = __light_convert_lux(ch0, ch1);
+    assert_true(ret > 0.64 && ret < 0.65); 
+
+    /* Second range from data sheet */
+    ch0 = 20;
+    ch1 = 11;
+    ret = __light_convert_lux(ch0, ch1);
+    assert_true(ret > 0.1 && ret < 0.11); 
+
+    ch0 = 41;
+    ch1 = 22;
+    ret = __light_convert_lux(ch0, ch1);
+    assert_true(ret > 0.23 && ret < 0.24); 
+
+    /* Third range from data sheet */
+    ch0 = 10;
+    ch1 = 7;
+    ret = __light_convert_lux(ch0, ch1);
+    assert_true(ret > 0.02 && ret < 0.022); 
+
+    ch0 = 20;
+    ch1 = 15;
+    ret = __light_convert_lux(ch0, ch1);
+    assert_true(ret > 0.025 && ret < 0.028); 
+
+    /* Fourth range from data sheet */
+    ch0 = 10;
+    ch1 = 12;
+    ret = __light_convert_lux(ch0, ch1);
+    assert_true(ret > 0.001 && ret < 0.0012); 
+
+    ch0 = 25;
+    ch1 = 25;
+    ret = __light_convert_lux(ch0, ch1);
+    assert_true(ret > 0.008 && ret < 0.009); 
+
+    /* Fifth range from data sheet */
+    ch0 = 3;
+    ch1 = 12;
+    ret = __light_convert_lux(ch0, ch1);
+    assert_true(ret == 0.0); 
+
+    ch0 = 11;
+    ch1 = 30;
+    ret = __light_convert_lux(ch0, ch1);
+    assert_true(ret == 0.0); 
+
 }

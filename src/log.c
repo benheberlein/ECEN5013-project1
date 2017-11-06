@@ -37,7 +37,7 @@ static FILE *log_file;
 /**
  * @brief Private functions
  */
-static void __log_terminate(void *arg) {
+void __log_terminate(void *arg) {
     if (log_file != NULL) {
         /* Get time */
         time_t t;
@@ -59,6 +59,9 @@ static void __log_terminate(void *arg) {
     }
 }
 
+/**
+ * @brief Public functions
+ */
 void *log_task(void *data) {
 
     /* Register exit handler */

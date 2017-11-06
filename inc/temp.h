@@ -243,4 +243,14 @@ uint8_t temp_alive(msg_t *rx);
  */
 uint8_t temp_kill(msg_t *rx);
 
+/**
+ * @brief Private functions
+ */
+uint16_t  __temp_i2c_read(uint8_t address);
+void __temp_i2c_write(uint16_t data, uint8_t address);
+float __temp_conv(uint16_t);
+void __temp_check(union sigval arg);
+uint8_t __temp_timer_init(void);
+void __temp_terminate(void *arg);
+
 #endif /* __TEMP_H__ */

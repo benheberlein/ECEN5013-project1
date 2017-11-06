@@ -35,12 +35,27 @@ void test_light_rw(void);
 
 int main(void) {
 
-    struct CMUnitTest tests[] = {
+    /* Tests run as separate groups because of cmocka issue */
+    const struct CMUnitTest t_temp_conv[] = {
         cmocka_unit_test(test_temp_conv),
-        cmocka_unit_test(test_temp_rw),
+    };
+
+    const struct CMUnitTest t_light_conv[] = {
         cmocka_unit_test(test_light_conv),
+    };
+
+    const struct CMUnitTest t_temp_rw[] = {
+        cmocka_unit_test(test_temp_rw),
+    };
+
+    const struct CMUnitTest t_light_rw[] = {
         cmocka_unit_test(test_light_rw),
     };
 
-    return cmocka_run_group_tests(tests, NULL, NULL);
+    cmocka_run_group_tests(t_light_conv, NULL, NULL);
+    cmocka_run_group_tests(t_temp_conv, NULL, NULL);
+    cmocka_run_group_tests(t_temp_rw, NULL, NULL);
+    cmocka_run_group_tests(t_light_rw, NULL, NULL);
+
+    return 0;
 }

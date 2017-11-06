@@ -141,4 +141,9 @@ uint8_t log_alive(logmsg_t *rx);
  */
 uint8_t log_kill(logmsg_t *rx);
 
+/**
+ * @brief Private functions
+ */
+void __log_terminate(void *arg);
+
 #endif /* __LOG_H */

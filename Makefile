@@ -56,7 +56,7 @@ $(BUILD_DIR)/%.o: %.c
 
 $(BIN_DIR)/$(TEST_OUTPUT_NAME): $(addprefix $(BUILD_DIR)/, $(TEST_OBJS))
 	    @$(MKDIR_P) $(BIN_DIR)
-		$(CC) $(CFLAGS) $(TESTFLAGS) -o $@ $^ $(LDFLAGS)
+		$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS) $(TESTFLAGS)
 
 # Remaps an individual object file to the correct folder
 .PHONY: %.o

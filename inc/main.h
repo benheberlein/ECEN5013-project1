@@ -94,4 +94,15 @@ int main(int argc, char **argv);
  */
 uint8_t main_exit(msg_t *rx);
 
+/**
+ * @brief private functions
+ */
+void __main_heartbeat(union sigval arg);
+void __main_logic(union sigval argv);
+uint8_t __main_heartbeat_init(void);
+uint8_t __main_logic_init(void);
+uint8_t __main_pthread_init(void);
+uint8_t __main_led_set(uint8_t led, uint8_t state);
+
+
 #endif /* __MAIN_H__ */

@@ -28,5 +28,53 @@
 
 void test_temp_conv(void) {
 
-   return; 
+    uint16_t data;
+    float ret;
+
+    /* From Table 2 in TMP102 data sheet */
+    data = 0x7FF0;
+    ret = __temp_conv(data);
+    assert_true(ret == 127.9375);
+
+    data = 0x6400;
+    ret = __temp_conv(data);
+    assert_true(ret == 100.0);
+
+    data = 0x5000;
+    ret = __temp_conv(data);
+    assert_true(ret == 80.0);
+
+    data = 0x4B00;
+    ret = __temp_conv(data);
+    assert_true(ret == 75.0);
+    
+    data = 0x3200;
+    ret = __temp_conv(data);
+    assert_true(ret == 50.0);
+ 
+    data = 0x1900;
+    ret = __temp_conv(data);
+    assert_true(ret == 25.0);
+ 
+    data = 0x0040;
+    ret = __temp_conv(data);
+    assert_true(ret == 0.25);
+
+    data = 0x0000;
+    ret = __temp_conv(data);
+    assert_true(ret == 0);
+
+    data = 0xFFC0;
+    ret = __temp_conv(data);
+    assert_true(ret == -0.25);
+    
+    data = 0xE700;
+    ret = __temp_conv(data);
+    assert_true(ret == -25);
+ 
+    data = 0xC900;
+    ret = __temp_conv(data);
+    assert_true(ret == -55);
+  
+    return; 
 }

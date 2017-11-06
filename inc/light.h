@@ -242,4 +242,14 @@ uint8_t light_alive(msg_t *rx);
  */
 uint8_t light_kill(msg_t *rx);
 
+/**
+ *  * @brief Private functions
+ *   */
+void __light_terminate(void *arg);
+uint8_t __light_i2c_read(uint8_t address);
+void __light_i2c_write(uint8_t data, uint8_t address);
+float __light_convert_lux(uint16_t ch0, uint16_t ch1);
+void __light_check(union sigval arg);
+uint8_t __light_timer_init(void);
+
 #endif /* __LIGHT_H__ */

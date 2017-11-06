@@ -43,14 +43,7 @@ static float current_lux = 0.0;
 /**
  * @brief Private functions
  */
-static void __light_terminate(void *arg);
-static uint8_t __light_i2c_read(uint8_t address);
-static void __light_i2c_write(uint8_t data, uint8_t address);
-static float __light_convert_lux(uint16_t ch0, uint16_t ch1);
-static void __light_check(union sigval arg);
-static uint8_t __light_timer_init(void);
-
-static uint8_t __light_timer_init(void) {
+uint8_t __light_timer_init(void) {
 
     timer_t tmr;
     struct itimerspec ts;
@@ -82,7 +75,7 @@ static uint8_t __light_timer_init(void) {
     return MAIN_SUCCESS;
 }
 
-static void __light_check(union sigval arg) {
+void __light_check(union sigval arg) {
     uint8_t temp;
 	uint16_t ch0, ch1;
 
@@ -115,19 +108,23 @@ static void __light_check(union sigval arg) {
 	__light_timer_init();
 }
 
-static float __light_convert_lux(uint16_t ch0, uint16_t ch1) {
+float __light_convert_lux(uint16_t ch0, uint16_t ch1) {
     float ret = 0.0;
     float div = 0.0;
 
+    if (ch0 == 0.0) {
+        return 0.0;
+    }
+
     /* Taken from APDS-9301 data sheet page 4 */
     div = ((float)ch1)/((float)ch0);
-    if (div < 0 && div <= 0.5) {
+    if (div > 0 && div <= 0.5) {
         ret = (0.0304 * ch0) - (0.062 * ch0 *pow(div, 1.4));
-    } else if (div < 0.5 && div <= 0.61) {
+    } else if (div > 0.5 && div <= 0.61) {
         ret = (0.0224 * ch0) - (0.031 * ch1);
-    } else if (div < 0.61 && div <= 0.8) {
+    } else if (div > 0.61 && div <= 0.8) {
         ret = (0.0128 * ch0) - (.0153 * ch1);
-    } else if (div < 0.8 && div <= 1.30) {
+    } else if (div > 0.8 && div <= 1.30) {
         ret = (0.00146 * ch0) - (0.00112 * ch1);
     } else {
         ret = 0.0;
@@ -136,7 +133,7 @@ static float __light_convert_lux(uint16_t ch0, uint16_t ch1) {
     return ret;
 }
 
-static uint8_t __light_i2c_read(uint8_t address) {
+uint8_t __light_i2c_read(uint8_t address) {
 
     uint8_t data;
 
@@ -151,18 +148,21 @@ static uint8_t __light_i2c_read(uint8_t address) {
 
 }
 
-static void __light_i2c_write(uint8_t data, uint8_t address) {
+void __light_i2c_write(uint8_t data, uint8_t address) {
     mraa_i2c_write_byte(i2c, LIGHT_CMD_WRITE | (address & LIGHT_CMD_ADDR_MASK));
     mraa_i2c_write_byte(i2c, data);
 
 }
 
-static void __light_terminate(void *arg) {
+void __light_terminate(void *arg) {
     logmsg_t ltx;
     LOG_FMT(MAIN_THREAD_TEMP, LOG_LEVEL_WARN, ltx, "Killing light module gracefully");
     logmsg_send(&ltx, MAIN_THREAD_LOG);
 }
 
+/**
+ * @brief Public functions
+ */
 void *light_task(void *data) {
 
     /* Register exit handler */

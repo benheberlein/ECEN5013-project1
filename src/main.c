@@ -52,14 +52,7 @@ static char *led_names[] = {"/sys/devices/platform/leds/leds/beaglebone:green:us
 /**
  * @brief private functions
  */
-static void __main_heartbeat(union sigval arg);
-static void __main_logic(union sigval argv);
-static uint8_t __main_heartbeat_init(void);
-static uint8_t __main_logic_init(void);
-static uint8_t __main_pthread_init(void);
-static uint8_t __main_led_set(uint8_t led, uint8_t state);
-
-static uint8_t __main_led_set(uint8_t led, uint8_t state) {
+uint8_t __main_led_set(uint8_t led, uint8_t state) {
     if (led > 3) {
         logmsg_t ltx;
         LOG_FMT(MAIN_THREAD_MAIN, LOG_LEVEL_ERROR, ltx, "Bad value in call to LED set");
@@ -79,7 +72,7 @@ static uint8_t __main_led_set(uint8_t led, uint8_t state) {
     return MAIN_SUCCESS;
 } 
 
-static uint8_t __main_logic_init(void) {
+uint8_t __main_logic_init(void) {
 
     timer_t tmr;
     struct itimerspec ts;
@@ -111,7 +104,7 @@ static uint8_t __main_logic_init(void) {
     return MAIN_SUCCESS;
 }
 
-static uint8_t __main_heartbeat_init(void) {
+uint8_t __main_heartbeat_init(void) {
 
     timer_t tmr;
     struct itimerspec ts;
@@ -161,7 +154,7 @@ static uint8_t __main_heartbeat_init(void) {
     return MAIN_SUCCESS;
 }
 
-static void __main_logic(union sigval arg) {
+void __main_logic(union sigval arg) {
     logmsg_t ltx;
     LOG_FMT(MAIN_THREAD_MAIN, LOG_LEVEL_INFO, ltx, "Logic timer");
     logmsg_send(&ltx, MAIN_THREAD_LOG);
@@ -219,7 +212,7 @@ static void __main_logic(union sigval arg) {
 
 }
 
-static void __main_heartbeat(union sigval arg) {    
+void __main_heartbeat(union sigval arg) {    
 
     logmsg_t ltx;
     LOG_FMT(MAIN_THREAD_MAIN, LOG_LEVEL_INFO, ltx, "Heartbeat check");
@@ -293,7 +286,7 @@ static void __main_heartbeat(union sigval arg) {
     __main_heartbeat_init();
 }
 
-static uint8_t __main_pthread_init(void) {
+uint8_t __main_pthread_init(void) {
 
     /* Open all threads */
     if (pthread_create(&main_tasks[MAIN_THREAD_TEMP], NULL, temp_task, NULL)) {

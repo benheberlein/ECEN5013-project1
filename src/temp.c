@@ -42,14 +42,8 @@ static float temperature_c = 123.456;
 
 /**
  * @brief Private functions
- */
-static uint16_t  __temp_i2c_read(uint8_t address);
-static void __temp_i2c_write(uint16_t data, uint8_t address);
-static void __temp_check(union sigval arg);
-static uint8_t __temp_timer_init(void);
-static void __temp_terminate(void *arg);
-
-static uint16_t  __temp_i2c_read(uint8_t address) {
+ */ 
+uint16_t  __temp_i2c_read(uint8_t address) {
 
     uint16_t data = __bswap_16((mraa_i2c_read_word_data(i2c, address)));
 
@@ -60,11 +54,27 @@ static uint16_t  __temp_i2c_read(uint8_t address) {
     return data;
 }
 
-static void __temp_i2c_write(uint16_t data, uint8_t address) {
+void __temp_i2c_write(uint16_t data, uint8_t address) {
      mraa_i2c_write_word_data(i2c, __bswap_16(data), address);
 }
 
-static uint8_t __temp_timer_init(void) {
+float __temp_conv(uint16_t data) {
+    /* Get temperature */
+	data = data >> 4;
+    float c = 0;
+
+    /* Convert to deg C */
+    if (data & 0x0800) {
+        data = ((~data) & 0x0fff) + 1;
+        c = data * -TEMP_RES;
+    } else {
+        c = data * TEMP_RES;
+    }
+    return c;
+
+}
+
+uint8_t __temp_timer_init(void) {
 
     timer_t tmr;
     struct itimerspec ts;
@@ -83,7 +93,6 @@ static uint8_t __temp_timer_init(void) {
     if (timer_create(CLOCK_REALTIME, &se, &tmr) == -1) {
         logmsg_t ltx;
         LOG_FMT(MAIN_THREAD_TEMP, LOG_LEVEL_ERROR, ltx, "Failed to start temp check timer");
-
         logmsg_send(&ltx, MAIN_THREAD_LOG);
     }
 
@@ -96,37 +105,23 @@ static uint8_t __temp_timer_init(void) {
     return MAIN_SUCCESS;
 }
 
-static void __temp_check(union sigval arg) {
-
-#if 0
-    logmsg_t ltx;
-    LOG_FMT(MAIN_THREAD_TEMP, LOG_LEVEL_INFO, ltx, "Temp check");
-    logmsg_send(&ltx, MAIN_THREAD_LOG); */
-#endif 
+void __temp_check(union sigval arg) {
 
     /* Get temperature */
-    uint16_t data = __temp_i2c_read(TEMP_REG_TEMP) >> 4;
-    float c = 0;
-
-    /* Convert to deg C */
-    if (data & 0x0800) {
-        data = ((~data) & 0x0fff) + 1;
-        c = data * -TEMP_RES;
-    } else {
-        c = data * TEMP_RES;
-    }
-    temperature_c = c;
-
+    temperature_c = __temp_conv(__temp_i2c_read(TEMP_REG_TEMP));
     __temp_timer_init();
 
 }
 
-static void __temp_terminate(void *arg) {
+void __temp_terminate(void *arg) {
     logmsg_t ltx;
     LOG_FMT(MAIN_THREAD_TEMP, LOG_LEVEL_WARN, ltx, "Killing temperature module gracefully");
     logmsg_send(&ltx, MAIN_THREAD_LOG);
 }
 
+/**
+ * @brief Public functions
+ */
 void *temp_task(void *data) {
 
     /* Register exit handler */

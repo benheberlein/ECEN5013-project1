@@ -25,8 +25,36 @@
 #include <cmocka.h>
 #include <stdlib.h>
 #include <limits.h>
+#include <stdio.h>
+#include <mraa.h>
+
+static mraa_i2c_context i2c;
 
 void test_temp_rw(void) {
+
+    uint16_t data = 0;
+    uint16_t data_new = 0;
+    uint8_t address = 0;
+
+    /* Initialize */
+    temp_init(NULL);
+
+    /* Set conversion rate */
+    address = TEMP_REG_CTRL;
+    data = TEMP_REG_CTRL_CR1 | TEMP_REG_CTRL_CR1;
+    data |= __temp_i2c_read(address);
+    __temp_i2c_write(data, address);
+    data_new  = __temp_i2c_read(address);
+    assert_true(data == data_new);
+
+    /* Reset conversion rate */
+    address = TEMP_REG_CTRL;
+    data = __temp_i2c_read(address);
+    data |= TEMP_REG_CTRL_CR1;
+    data &= ~TEMP_REG_CTRL_CR2;
+    __temp_i2c_write(data, address);
+    data_new = __temp_i2c_read(address);
+    assert_true(data == data_new);
 
     return;
 }

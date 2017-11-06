@@ -25,8 +25,35 @@
 #include <cmocka.h>
 #include <stdlib.h>
 #include <limits.h>
+#include <mraa.h>
+#include <stdio.h>
+
+static mraa_i2c_context i2c;
 
 void test_light_rw(void) {
 
+    uint8_t data = 0;
+    uint8_t data_new = 0;
+    uint8_t address = 0;
+
+    /* Initialize */
+    light_init(NULL);
+
+    /* Set power on */
+    address = LIGHT_REG_CTRL;
+    data = 0x03;
+    __light_i2c_write(data, address);
+    data_new  = __light_i2c_read(address);
+    assert_true(data_new & 0x03 == 0x03);
+
+    /* Read timing register */
+    address = LIGHT_REG_TIME;
+    data = __light_i2c_read(address);
+    data |= 0x03;
+    __light_i2c_write(data, address);
+    data_new = __light_i2c_read(address);
+    assert_true(data == data_new);
+
     return;
+
 }

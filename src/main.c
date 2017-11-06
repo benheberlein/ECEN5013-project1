@@ -384,7 +384,9 @@ int main(int argc, char **argv) {
                     if (rx.data[4] == TEMP_FMT_CEL) {
                         memcpy(&local_temp, rx.data, 4); 
                     }                    
-                    LOG_FMT(MAIN_THREAD_MAIN, LOG_LEVEL_INFO, ltx, "Recieved temperature value %f %s", local_temp, temp_fmt_strings[rx.data[4]]);
+                    float temp;
+                    memcpy(&temp, rx.data, 4);                    
+                    LOG_FMT(MAIN_THREAD_MAIN, LOG_LEVEL_INFO, ltx, "Recieved temperature value %f %s", temp, temp_fmt_strings[rx.data[4]]);
                     logmsg_send(&ltx, MAIN_THREAD_LOG);
                     break;
                 case MSG_RSP(MAIN_THREAD_TEMP, TEMP_READREG):
